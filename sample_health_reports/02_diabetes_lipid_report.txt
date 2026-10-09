@@ -1,0 +1,33 @@
+SAMPLE REPORT - SYNTHETIC DATA FOR SOFTWARE TESTING ONLY. NOT A REAL PATIENT.
+
+CITY CARE PATHOLOGY LAB (fictional)
+DIABETES AND LIPID PROFILE
+
+Patient Name: Lakshmi Devi (fictional)      Age/Sex: 52 Years / Female
+Patient ID: CCP-558210                      Sample Collected: 03-Sep-2026 07:30 (fasting, 12 hours)
+Referred By: Dr. S. Reddy (fictional)       Report Date: 03-Sep-2026 12:10
+
+SECTION 1: GLUCOSE METABOLISM
+TEST NAME                 RESULT      UNIT         REFERENCE RANGE        FLAG
+Fasting Plasma Glucose    146         mg/dL        70 - 99                HIGH
+Post-Prandial Glucose     228         mg/dL        < 140                  HIGH
+HbA1c                     7.6         %            < 5.7 normal           HIGH
+                                                   5.7 - 6.4 prediabetes
+                                                   >= 6.5 diabetes range
+
+SECTION 2: LIPID PROFILE
+Total Cholesterol         231         mg/dL        < 200                  HIGH
+LDL Cholesterol           148         mg/dL        < 100 optimal          HIGH
+HDL Cholesterol           38          mg/dL        > 50 (women)           LOW
+Triglycerides             226         mg/dL        < 150                  HIGH
+VLDL Cholesterol          45          mg/dL        5 - 40                 HIGH
+Total Cholesterol / HDL   6.1         ratio        < 4.5                  HIGH
+
+LABORATORY NOTE
+Values are interpreted according to commonly used laboratory reference ranges.
+Diagnosis and management decisions must be made by the treating doctor after
+clinical evaluation. A single result should not be used alone to confirm a
+diagnosis.
+
+*** End of Report ***
+This is a computer generated sample report.

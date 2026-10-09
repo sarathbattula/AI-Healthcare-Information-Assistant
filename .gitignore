@@ -1,0 +1,31 @@
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment and Secrets
+.env
+.env.local
+*.pem
+*.key
+
+# Database and Vector Store Persistence
+*.db
+*.sqlite3
+healthcare_assistant.db
+healthcare_v2.db
+chroma_db/
+chroma_v2_data/
+uploaded_docs/
+
+# Node / React Frontend Build
+node_modules/
+dist/
+build/
+.vite/
+npm-debug.log*
+
+# Testing & Coverage
+.pytest_cache/
+eval/eval_report.json
+test_email*.py

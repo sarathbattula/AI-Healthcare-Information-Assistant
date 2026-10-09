@@ -1,0 +1,30 @@
+SAMPLE REPORT - SYNTHETIC DATA FOR SOFTWARE TESTING ONLY. NOT A REAL PATIENT.
+
+SUNRISE DIAGNOSTIC LABORATORY (fictional)
+COMPLETE BLOOD COUNT (CBC) REPORT
+
+Patient Name: Ravi Kumar (fictional)        Age/Sex: 34 Years / Male
+Patient ID: SDL-100234                      Sample Collected: 12-Aug-2026 08:15
+Referred By: Dr. A. Sharma (fictional)      Report Date: 12-Aug-2026 13:40
+
+TEST NAME                 RESULT      UNIT         REFERENCE RANGE        FLAG
+Hemoglobin (Hb)           10.8        g/dL         13.0 - 17.0            LOW
+Total RBC Count           4.1         million/uL   4.5 - 5.5              LOW
+Hematocrit (PCV)          33.5        %            40 - 50                LOW
+MCV                       71.0        fL           83 - 101               LOW
+MCH                       23.5        pg           27 - 32                LOW
+MCHC                      31.9        g/dL         31.5 - 34.5            Normal
+RDW                       16.2        %            11.6 - 14.0            HIGH
+Total WBC Count           7,400       cells/uL     4,000 - 11,000         Normal
+Neutrophils               58          %            40 - 80                Normal
+Lymphocytes               34          %            20 - 40                Normal
+Eosinophils               4           %            1 - 6                  Normal
+Platelet Count            310,000     cells/uL     150,000 - 410,000      Normal
+
+LABORATORY COMMENTS
+Peripheral smear shows microcytic hypochromic red cells with mild anisocytosis.
+Findings may be associated with several conditions. Clinical correlation and
+further investigations are advised at the discretion of the treating physician.
+
+*** End of Report ***
+This is a computer generated sample report.

@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediCare AI - Health Problem Chatbot & Document Verification</title>
+    <meta name="description" content="AI Healthcare Information Assistant with intelligent symptom problem solving, verified medical document analysis, and immediate solutions on the same page.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        :root {
+            --bg-base: #090e17;
+            --bg-surface: #0f172a;
+            --bg-card: rgba(17, 24, 39, 0.78);
+            --border-glass: rgba(255, 255, 255, 0.09);
+            --border-glow: rgba(14, 165, 233, 0.25);
+            --primary-blue: #0284c7;
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #64748b;
+            --card-radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(99, 102, 241, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-body);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 116, 139, 0.4);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(14, 165, 233, 0.6);
+        }
+
+        /* Crisp Form Controls & High Visibility Labels */
+        .form-label-custom {
+            color: #e2e8f0;
+            font-weight: 600;
+            font-size: 0.88rem;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-control::placeholder, .form-select::placeholder, textarea::placeholder {
+            color: rgba(203, 213, 225, 0.6) !important;
+            opacity: 1 !important;
+        }
+
+        .form-control, .form-select {
+            background-color: rgba(15, 23, 42, 0.85) !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            color: #f8fafc !important;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: rgba(15, 23, 42, 0.95) !important;
+            border-color: #06b6d4 !important;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.35) !important;
+            color: #ffffff !important;
+        }
+
+        .form-select option {
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+
+        /* Glass Cards */
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4);
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.14);
+        }
+
+        /* Navbar */
+        .navbar-main {
+            background: rgba(9, 14, 23, 0.88);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 12px 0;
+            z-index: 1030;
+        }
+
+        .brand-logo {
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-heading);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pulse-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+
+        .nav-link-custom {
+            color: var(--text-body);
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .nav-link-custom:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .nav-link-custom.active {
+            color: #fff;
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.25), rgba(6, 182, 212, 0.15));
+            border: 1px solid rgba(14, 165, 233, 0.35);
+        }
+
+        /* Buttons */
+        .btn-glow-primary {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #fff;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 10px 20px;
+            transition: all 0.25s ease;
+        }
+        .btn-glow-primary:hover {
+            background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .btn-glow-emerald {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            color: #fff;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 10px 20px;
+            transition: all 0.25s ease;
+        }
+        .btn-glow-emerald:hover {
+            background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-glass);
+            color: var(--text-heading);
+            font-weight: 500;
+            border-radius: 10px;
+            padding: 8px 16px;
+            transition: all 0.2s ease;
+        }
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        /* Chat Component Styles */
+        .chat-box {
+            flex: 1 1 auto;
+            max-height: calc(100vh - 310px);
+            min-height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            border-radius: 12px;
+            background: rgba(11, 18, 30, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
+        .msg-user-bubble {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: #fff;
+            border-radius: 16px 16px 3px 16px;
+            padding: 12px 18px;
+            max-width: 82%;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .msg-assistant-bubble {
+            align-self: flex-start;
+            background: rgba(24, 34, 53, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #f1f5f9;
+            border-radius: 16px 16px 16px 3px;
+            padding: 16px 20px;
+            max-width: 90%;
+            font-size: 0.93rem;
+            line-height: 1.6;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .msg-assistant-bubble h1, .msg-assistant-bubble h2, .msg-assistant-bubble h3, .msg-assistant-bubble h4 {
+            color: #38bdf8;
+            margin-top: 10px;
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .msg-assistant-bubble ul, .msg-assistant-bubble ol {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+        .msg-assistant-bubble li {
+            margin-bottom: 4px;
+        }
+
+        /* Emergency Alert Banner */
+        .emergency-banner-box {
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.9) 0%, rgba(127, 29, 29, 0.9) 100%);
+            border: 2px solid #ef4444;
+            color: #fff;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+            animation: pulse-border 2s infinite;
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .professional-notice-box {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: #fbbf24;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            font-size: 0.88rem;
+        }
+
+        /* Suggestion Chips */
+        .symptom-chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-body);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .symptom-chip:hover {
+            background: rgba(14, 165, 233, 0.15);
+            border-color: rgba(14, 165, 233, 0.4);
+            color: #38bdf8;
+            transform: translateY(-1px);
+        }
+
+        /* Document Upload Zone */
+        .upload-dropzone {
+            border: 2px dashed rgba(14, 165, 233, 0.35);
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            background: rgba(14, 165, 233, 0.03);
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+        .upload-dropzone:hover, .upload-dropzone.dragover {
+            border-color: #06b6d4;
+            background: rgba(6, 182, 212, 0.08);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+        }
+
+        /* Verified Badge */
+        .verified-badge {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            color: #34d399;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hash-tag {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        /* Result Sections */
+        .solution-card-body {
+            background: rgba(11, 18, 30, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        /* Modal Customizations */
+        .modal-content-glass {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            color: var(--text-body);
+        }
+        .modal-header-glass {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 18px 24px;
+        }
+        .modal-footer-glass {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 16px 24px;
+        }
+
+        /* Views (SPA switching) */
+        .spa-view {
+            display: none;
+        }
+        .spa-view.active-view {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* History Card */
+        .history-card {
+            background: rgba(24, 34, 53, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 16px 20px;
+            transition: all 0.2s ease;
+        }
+        .history-card:hover {
+            background: rgba(24, 34, 53, 0.9);
+            border-color: rgba(14, 165, 233, 0.3);
+            transform: translateX(4px);
+        }
+
+        /* Emergency quick pill */
+        .emergency-quick-pill {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #f87171;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .emergency-quick-pill:hover {
+            background: rgba(239, 68, 68, 0.25);
+            color: #fca5a5;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-main sticky-top">
+        <div class="container-fluid px-lg-4">
+            <!-- Brand (Clean Text, No Logo Icon) -->
+            <a class="brand-logo text-white fw-bold me-4" href="#" onclick="showView('home'); return false;" style="text-decoration: none; font-size: 1.3rem;">
+                MediCare AI
+            </a>
+
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar Links & Login Button in Same Horizontal Line -->
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-2 align-items-center flex-nowrap">
+                    <li class="nav-item">
+                        <a class="nav-link-custom active" id="nav-home" onclick="showView('home')">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link-custom" id="nav-chat" onclick="showView('chat')">AI Chatbot</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link-custom" id="nav-document" onclick="showView('document')">Document Verification</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link-custom" id="nav-contact" onclick="showView('contact')">Contact Us</a>
+                    </li>
+                </ul>
+
+                <!-- Right Side Action (Login Button Only, Same Horizontal Line) -->
+                <div class="d-flex align-items-center flex-nowrap mt-2 mt-lg-0 ms-auto">
+                    <div id="authNavbarContainer">
+                        <button class="btn btn-glow-primary btn-sm px-3" onclick="openAuthModal('login')">
+                            Login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="flex-grow-1 py-4">
+        <div class="container-fluid px-lg-4">
+
+            <!-- ================= VIEW 1: HOME (PROJECT INTRODUCTION & OVERVIEW) ================= -->
+            <div id="view-home" class="spa-view active-view">
+                
+                <!-- Project Hero Banner -->
+                <div class="glass-panel p-4 mb-4">
+                    <div class="row align-items-center g-4">
+                        <div class="col-lg-8">
+                            <div class="badge bg-info-subtle text-info p-2 px-3 rounded-pill fw-semibold border border-info border-opacity-25 mb-3">
+                                <i class="bi bi-shield-check me-1"></i> Official AI Project Overview & Architecture
+                            </div>
+                            <h2 class="fw-bold text-white mb-2" style="font-size: 2.1rem;">
+                                AI Healthcare Information Assistant
+                            </h2>
+                            <p class="text-body-secondary fs-6 mb-3" style="line-height: 1.7;">
+                                A next-generation clinical decision support and health literacy platform. Designed with <strong>multi-layer safety protocols</strong>, <strong>grounded Retrieval-Augmented Generation (RAG)</strong> over WHO & CDC guidelines, and <strong>automated lab report verification</strong> to empower users with evidence-based health guidance.
+                            </p>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-glow-primary px-4" onclick="showView('chat')">
+                                    <i class="bi bi-chat-dots-fill me-1"></i> Start AI Symptom Chatbot
+                                </button>
+                                <button class="btn btn-glow-emerald px-4" onclick="showView('document')">
+                                    <i class="bi bi-file-earmark-medical me-1"></i> Verify Medical Report
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-center d-none d-lg-block">
+                            <div class="p-4 rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25 text-center">
+                                <div class="pulse-icon mx-auto mb-3" style="width: 70px; height: 70px; font-size: 2rem;">
+                                    <i class="bi bi-heart-pulse-fill"></i>
+                                </div>
+                                <h6 class="fw-bold text-white mb-1">Grounded & Safe</h6>
+                                <div class="small text-muted mb-2">High-speed Groq Inference</div>
+                                <span class="badge bg-success-subtle text-success border border-success border-opacity-25 px-3 py-1">Active System Status</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 Core Capabilities Grid -->
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-grid-fill text-info"></i> Project Capabilities & System Modules
+                </h5>
+                <div class="row g-4 mb-4">
+                    
+                    <!-- Feature 1: Chatbot -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="glass-panel p-4 h-100 d-flex flex-column justify-content-between cursor-pointer card-hover" onclick="showView('chat')">
+                            <div>
+                                <div class="badge bg-info-subtle text-info p-2 rounded-circle mb-3">
+                                    <i class="bi bi-chat-dots-fill fs-4"></i>
+                                </div>
+                                <h5 class="fw-bold text-white mb-2">AI Health Chatbot</h5>
+                                <p class="small text-muted mb-3" style="line-height: 1.6;">
+                                    Describe your custom health problems or symptoms in detail. Receive structured clinical solutions including causes, self-care remedies, lifestyle habits, red flags, and doctor questions.
+                                </p>
+                            </div>
+                            <div class="text-info small fw-semibold d-flex align-items-center gap-1">
+                                Launch Chatbot <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature 2: Document Verification -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="glass-panel p-4 h-100 d-flex flex-column justify-content-between cursor-pointer card-hover" onclick="showView('document')">
+                            <div>
+                                <div class="badge bg-success-subtle text-success p-2 rounded-circle mb-3">
+                                    <i class="bi bi-file-earmark-medical-fill fs-4"></i>
+                                </div>
+                                <h5 class="fw-bold text-white mb-2">Document Verification</h5>
+                                <p class="small text-muted mb-3" style="line-height: 1.6;">
+                                    Upload lab reports, discharge summaries, or test files (PDF, TXT, DOCX, PNG, JPG). Extracts parameters, flags abnormal markers, and generates instant executive action plans.
+                                </p>
+                            </div>
+                            <div class="text-success small fw-semibold d-flex align-items-center gap-1">
+                                Upload & Verify Report <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature 3: Safety & Escalation -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="glass-panel p-4 h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="badge bg-warning-subtle text-warning p-2 rounded-circle mb-3">
+                                    <i class="bi bi-shield-exclamation fs-4"></i>
+                                </div>
+                                <h5 class="fw-bold text-white mb-2">Multi-Layer Safety</h5>
+                                <p class="small text-muted mb-3" style="line-height: 1.6;">
+                                    Evaluates query safety: Category A triggers emergency helplines (112/108/14416) instantly; Category B logs specific dosage/diagnoses into professional review queue.
+                                </p>
+                            </div>
+                            <div class="text-warning small fw-semibold d-flex align-items-center gap-1">
+                                Emergency Protocols Built-In
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature 4: RAG Engine -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="glass-panel p-4 h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="badge bg-primary-subtle text-primary p-2 rounded-circle mb-3">
+                                    <i class="bi bi-database-check fs-4"></i>
+                                </div>
+                                <h5 class="fw-bold text-white mb-2">RAG Engine & FTS5</h5>
+                                <p class="small text-muted mb-3" style="line-height: 1.6;">
+                                    Combines ChromaDB vector embeddings (`all-MiniLM-L6-v2`) and SQLite FTS5 lexical indexing to ground advice strictly in WHO and CDC guidelines with citation tags `[E1]`.
+                                </p>
+                            </div>
+                            <div class="text-primary small fw-semibold d-flex align-items-center gap-1">
+                                Verified Medical Knowledge
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+            </div>
+
+            <!-- ================= VIEW 2: AI CHATBOT PAGE (DEDICATED PAGE) ================= -->
+            <div id="view-chat" class="spa-view">
+                <div class="glass-panel p-4 d-flex flex-column" style="min-height: 80vh;">
+                    
+                    <!-- Header -->
+                    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                        <div>
+                            <h5 class="fw-bold mb-0 text-white d-flex align-items-center gap-2">
+                                <i class="bi bi-chat-dots-fill text-info"></i> Health Problem & Symptom Chatbot
+                            </h5>
+                            <div class="small text-muted">Describe any symptoms or health problem manually to receive evidence-based clinical solutions</div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary text-muted" onclick="clearChatThread()" title="Clear chat">
+                            <i class="bi bi-trash3 me-1"></i> Clear Chat
+                        </button>
+                    </div>
+
+                    <!-- Attached Report Context Alert (if loaded from Document tab) -->
+                    <div id="attachedReportAlert" class="alert alert-info py-2 px-3 small d-none d-flex align-items-center justify-content-between mb-2">
+                        <div>
+                            <i class="bi bi-paperclip me-1"></i> Attached Report Context: <strong id="attachedReportName">Report.txt</strong>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white btn-sm" onclick="detachReportContext()"></button>
+                    </div>
+
+                    <!-- Quick Suggestion Chips -->
+                    <div class="d-flex gap-2 mb-3 overflow-x-auto pb-1" style="scrollbar-width: none;">
+                        <span class="symptom-chip" onclick="fillQuery('I have a severe migraine with nausea and light sensitivity. What could it be and what can help?')">🤕 Migraine & Nausea</span>
+                        <span class="symptom-chip" onclick="fillQuery('I have high fever with body chills and fatigue for 2 days. What should I do?')">🌡️ Fever & Chills</span>
+                        <span class="symptom-chip" onclick="fillQuery('What can I do for severe acid reflux and stomach burning after meals?')">🔥 Acid Reflux</span>
+                        <span class="symptom-chip" onclick="fillQuery('My lower back and knee hurt after lifting weights. What care and exercises help?')">🏋️ Back & Knee Pain</span>
+                        <span class="symptom-chip" onclick="fillQuery('I have insomnia and anxious heart palpitations at night. What are safe remedies?')">😴 Sleep & Anxiety</span>
+                    </div>
+
+                    <!-- Chat Box -->
+                    <div class="chat-box flex-grow-1 mb-3" id="chatThread" style="min-height: 450px;">
+                        <div class="msg-assistant-bubble">
+                            <div class="fw-bold text-info mb-1"><i class="bi bi-heart-pulse me-1"></i> Hello! I am your AI Healthcare Information Assistant.</div>
+                            <p class="mb-2">Describe what health symptoms or problems you are experiencing. I will provide:</p>
+                            <ul class="mb-1 small">
+                                <li><strong>Understanding the Problem:</strong> Medical overview of possible causes and mechanisms</li>
+                                <li><strong>Recommended Solutions:</strong> Practical self-care remedies, home care, and relief steps</li>
+                                <li><strong>Lifestyle & Dietary Support:</strong> Nutrition, hydration, and daily routine habits</li>
+                                <li><strong>Red Flag Alerts:</strong> Key warning signs when to seek immediate doctor or hospital care</li>
+                                <li><strong>Questions for Your Doctor:</strong> 3 targeted questions to bring to your consultation</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Chat Input Form -->
+                    <form id="chatForm" onsubmit="handleSendChat(event)" class="d-flex flex-column gap-2 mt-auto">
+                        <div class="input-group">
+                            <textarea id="chatInput" rows="2" class="form-control bg-dark text-white border-secondary border-opacity-50" placeholder="Type or paste your health problem manually (e.g. 'I have severe lower back pain and fatigue since 2 days')..." required autocomplete="off" onkeydown="handleChatKeyDown(event)"></textarea>
+                            <button type="submit" class="btn btn-glow-primary px-4 d-flex align-items-center justify-content-center" id="chatSendBtn">
+                                <i class="bi bi-send-fill me-1"></i> Get Solution
+                            </button>
+                        </div>
+                        <div class="small text-muted d-flex justify-content-between align-items-center px-1">
+                            <span><i class="bi bi-pencil-square me-1"></i> Write any custom health problem manually</span>
+                            <span>Press <strong>Enter</strong> to send, <strong>Shift+Enter</strong> for new line</span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ================= VIEW 3: DOCUMENT VERIFICATION PAGE (DEDICATED PAGE) ================= -->
+            <div id="view-document" class="spa-view">
+                <div class="glass-panel p-4">
+                    
+                    <!-- Header -->
+                    <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                        <div>
+                            <h4 class="fw-bold mb-1 text-white d-flex align-items-center gap-2">
+                                <i class="bi bi-file-earmark-medical-fill text-success"></i> Medical Document Verification & Solution
+                            </h4>
+                            <div class="small text-muted">Upload lab reports, clinical test files, or past medical records from your laptop for instant verification, parameter breakdown, and clinical action plans</div>
+                        </div>
+                        <span class="badge bg-success-subtle text-success border border-success border-opacity-25 px-3 py-2">Verified Pathology & Lab Processing</span>
+                    </div>
+
+                    <!-- Dual Column Layout: Upload Controls (Left) + Analysis & Solutions (Right) -->
+                    <div class="row g-4">
+                        
+                        <div class="col-lg-5">
+                            <div class="p-3 rounded bg-dark border border-secondary border-opacity-25 mb-3">
+                                
+                                <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                                    <h6 class="fw-bold text-white mb-0">Select or Paste Report</h6>
+                                    <div class="d-flex align-items-center gap-1 flex-wrap">
+                                        <button type="button" class="btn btn-xs btn-outline-info rounded-pill py-1 px-2 small" onclick="loadSampleReport('lipid')">
+                                            <i class="bi bi-clipboard2-pulse"></i> Lipid
+                                        </button>
+                                        <button type="button" class="btn btn-xs btn-outline-info rounded-pill py-1 px-2 small" onclick="loadSampleReport('diabetes')">
+                                            <i class="bi bi-droplet-half"></i> HbA1c
+                                        </button>
+                                        <button type="button" class="btn btn-xs btn-outline-info rounded-pill py-1 px-2 small" onclick="loadSampleReport('cbc')">
+                                            <i class="bi bi-droplet"></i> CBC
+                                        </button>
+                                        <button type="button" class="btn btn-xs btn-outline-info rounded-pill py-1 px-2 small" onclick="loadSampleReport('thyroid_liver')">
+                                            <i class="bi bi-activity"></i> Thyroid
+                                        </button>
+                                        <button type="button" class="btn btn-xs btn-outline-info rounded-pill py-1 px-2 small" onclick="loadSampleReport('radiology')">
+                                            <i class="bi bi-card-image"></i> Radiology
+                                        </button>
+                                        <button type="button" class="btn btn-xs btn-outline-info rounded-pill py-1 px-2 small" onclick="loadSampleReport('discharge')">
+                                            <i class="bi bi-file-earmark-medical"></i> Discharge
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Upload Drag & Drop -->
+                                <div class="upload-dropzone mb-3" id="dropZone" onclick="document.getElementById('fileUploadInput').click()">
+                                    <i class="bi bi-cloud-arrow-up-fill text-info fs-1 mb-2 d-block"></i>
+                                    <div class="fw-semibold text-white mb-1">Click or Drop Medical Report File Here</div>
+                                    <div class="small text-muted">Supports PDF, TXT, DOCX, PNG, JPG files</div>
+                                    <input type="file" id="fileUploadInput" class="d-none" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg" onchange="handleFileSelected(this)">
+                                </div>
+
+                                <div id="selectedFileNameBadge" class="small text-info fw-semibold mb-3 d-none p-2 rounded bg-info bg-opacity-10 border border-info border-opacity-25">
+                                    <i class="bi bi-file-earmark-check me-1"></i> Selected File: <span id="selectedFileNameText"></span>
+                                    <button class="btn btn-link btn-sm text-danger p-0 ms-2" onclick="clearSelectedFile()"><i class="bi bi-x-circle"></i></button>
+                                </div>
+
+                                <!-- Text Toggle -->
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <a href="javascript:void(0)" class="small text-info text-decoration-none" onclick="togglePasteArea()">
+                                        <i class="bi bi-pencil-square me-1"></i> Or paste medical report text directly
+                                    </a>
+                                </div>
+                                <textarea id="pasteReportArea" class="form-control bg-dark text-white border-secondary border-opacity-50 d-none mt-2 mb-3" rows="5" placeholder="Paste laboratory test results, blood work parameters, or medical findings here..."></textarea>
+
+                                <!-- Verify & Solve Button -->
+                                <button type="button" class="btn btn-glow-emerald w-100 py-2.5 fw-semibold" id="verifyBtn" onclick="handleVerifyAndSolve()">
+                                    <i class="bi bi-file-earmark-check me-1"></i> Verify & Summarize Document
+                                </button>
+                            </div>
+
+                            <!-- Verification Rules & Disclaimer -->
+                            <div class="p-3 rounded bg-secondary bg-opacity-10 border border-secondary border-opacity-25 small text-muted">
+                                <i class="bi bi-info-circle-fill text-info me-1"></i>
+                                <strong>Verification Process:</strong> Scans report text for clinical lexicon authenticity, extracts lab metric reference ranges, flags abnormal parameters, and generates evidence-based self-care guidance.
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Verification Results & Clinical Solution -->
+                        <div class="col-lg-7">
+                            
+                            <!-- Loading State -->
+                            <div id="verifyLoadingState" class="text-center py-5 d-none glass-panel">
+                                <div class="spinner-border text-info mb-3" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
+                                <h6 class="fw-bold text-white mb-1">Processing Medical Document...</h6>
+                                <div class="small text-muted">Extracting laboratory markers and generating document summary with Summarizer Agent...</div>
+                            </div>
+
+                            <!-- Placeholder when no report loaded -->
+                            <div id="docPlaceholderState" class="p-5 rounded bg-dark border border-secondary border-opacity-25 text-center text-muted">
+                                <i class="bi bi-file-earmark-medical fs-1 text-secondary mb-3 d-block"></i>
+                                <h6 class="fw-bold text-white mb-1">No Document Verification Active</h6>
+                                <div class="small text-muted mb-3">Upload a medical report file or click a sample report on the left to view verification scores and patient summaries.</div>
+                            </div>
+
+                            <!-- Immediate Summary & Solution Card -->
+                            <div id="docSolutionCard" class="d-none">
+                                <div class="p-3 mb-3 rounded bg-dark border border-secondary border-opacity-25">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                                        <div class="verified-badge" id="docVerifyBadge">
+                                            <i class="bi bi-patch-check-fill"></i> Verified Medical Record
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="badge bg-secondary" id="docConfidenceBadge">100% Match</span>
+                                            <span class="badge bg-warning text-dark" id="docAbnormalBadge">Flags Found</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between text-muted small">
+                                        <div id="docTitleDisplay" class="fw-semibold text-white">Report</div>
+                                        <div>Hash: <span class="hash-tag" id="docHashDisplay">sha256</span></div>
+                                    </div>
+                                </div>
+
+                                <!-- Summary Section (ReportSummarizerAgent) -->
+                                <div class="p-4 rounded bg-dark border border-secondary border-opacity-25 mb-3">
+                                    <h6 class="fw-bold text-info mb-3 d-flex align-items-center gap-2">
+                                        <i class="bi bi-file-text-fill"></i> Document Summary (Report Summarizer Agent)
+                                    </h6>
+                                    <div id="docSummaryContent" style="max-height: 350px; overflow-y: auto;">
+                                        <!-- Summary rendered here -->
+                                    </div>
+                                </div>
+
+                                <!-- Solution Agent Trigger Section -->
+                                <div id="solutionTriggerBox" class="mb-3">
+                                    <button type="button" class="btn btn-glow-emerald w-100 py-2.5 fw-semibold" id="solutionBtn" onclick="handleGenerateSolution()">
+                                        <i class="bi bi-lightbulb-fill me-1"></i> Generate Recommended Solution (Solution Agent)
+                                    </button>
+                                </div>
+
+                                <!-- Solution Loading State -->
+                                <div id="solutionLoadingState" class="text-center py-4 d-none p-3 rounded bg-dark border border-info border-opacity-25 mb-3">
+                                    <div class="spinner-border text-info mb-2" role="status" style="width: 2rem; height: 2rem;"></div>
+                                    <div class="small text-white fw-semibold">Recommended Solution Agent is formulating clinical action plan...</div>
+                                </div>
+
+                                <!-- Solution Section (RecommendedSolutionAgent) -->
+                                <div id="solutionCardBox" class="d-none p-4 rounded bg-dark border border-success border-opacity-50 mb-3">
+                                    <h6 class="fw-bold text-success mb-3 d-flex align-items-center gap-2">
+                                        <i class="bi bi-shield-check"></i> Recommended Solution Plan (Solution Agent)
+                                    </h6>
+                                    <div id="docSolutionContent" style="max-height: 450px; overflow-y: auto;">
+                                        <!-- Dynamic solution content rendered here -->
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-glow-primary flex-grow-1" onclick="sendReportToChat()">
+                                        <i class="bi bi-chat-quote me-1"></i> Send Context to AI Chatbot
+                                    </button>
+                                    <button class="btn btn-glass" onclick="copyDocumentSolution()" title="Copy solution to clipboard">
+                                        <i class="bi bi-clipboard me-1"></i> Copy Advice
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- ================= VIEW 5: CONTACT US PAGE (DEDICATED PAGE) ================= -->
+            <div id="view-contact" class="spa-view">
+                <div class="glass-panel p-4 mb-4">
+                    <div class="mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                        <h4 class="fw-bold mb-1 text-white d-flex align-items-center gap-2">
+                            <i class="bi bi-telephone-fill text-danger"></i> Contact Us & Healthcare Support
+                        </h4>
+                        <div class="small text-muted">Get in touch with clinical governance, technical support, or view emergency helpline numbers</div>
+                    </div>
+
+                    <div class="row g-4">
+                        
+                        <!-- Emergency Helplines (Left Column) -->
+                        <div class="col-lg-6">
+                            <div class="p-4 rounded bg-dark border border-secondary border-opacity-25 h-100">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <span class="badge bg-danger p-2"><i class="bi bi-telephone-inbound-fill fs-5"></i></span>
+                                    <div>
+                                        <h5 class="fw-bold text-white mb-0">24/7 Emergency Helplines</h5>
+                                        <div class="small text-danger">For acute medical emergencies, call instantly</div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-column gap-3 mb-4" id="helplinesContainer">
+                                    
+                                    <div class="emergency-banner-box mb-0 p-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <div class="fw-bold fs-5">112 - National Emergency Response</div>
+                                                <div class="small opacity-90">All-in-one Emergency (Police, Fire, Ambulance)</div>
+                                            </div>
+                                            <a href="tel:112" class="btn btn-light btn-sm fw-bold px-3">Call 112</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-3 rounded bg-dark bg-opacity-75 border border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="fw-bold text-white"><span class="badge bg-danger me-2">108</span> Medical Emergency & Ambulance</div>
+                                            <div class="small text-muted">Free 24/7 emergency medical transit & trauma team</div>
+                                        </div>
+                                        <a href="tel:108" class="btn btn-outline-danger btn-sm">Call 108</a>
+                                    </div>
+
+                                    <div class="p-3 rounded bg-dark bg-opacity-75 border border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="fw-bold text-white"><span class="badge bg-info me-2">14416</span> Tele-MANAS Mental Health</div>
+                                            <div class="small text-muted">Toll-free 24/7 mental wellness counseling & crisis intervention</div>
+                                        </div>
+                                        <a href="tel:14416" class="btn btn-outline-info btn-sm">Call 14416</a>
+                                    </div>
+
+                                    <div class="p-3 rounded bg-dark bg-opacity-75 border border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="fw-bold text-white"><span class="badge bg-secondary me-2">104</span> National Health Helpline</div>
+                                            <div class="small text-muted">General health advisory, symptoms directory, hospital locator</div>
+                                        </div>
+                                        <a href="tel:104" class="btn btn-outline-secondary btn-sm">Call 104</a>
+                                    </div>
+
+                                </div>
+
+                                <div class="p-3 rounded bg-secondary bg-opacity-10 border border-secondary border-opacity-25 small text-muted">
+                                    <i class="bi bi-info-circle-fill text-info me-1"></i>
+                                    <strong>Emergency Safety Notice:</strong> If someone exhibits severe symptoms such as chest pressure, sudden slurred speech, acute shortness of breath, or profuse bleeding, contact emergency services (112 or 108) immediately.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Healthcare Support & Feedback Form (Right Column) -->
+                        <div class="col-lg-6">
+                            <div class="p-4 rounded bg-dark border border-secondary border-opacity-25 h-100">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <span class="badge bg-primary p-2"><i class="bi bi-envelope-heart fs-5"></i></span>
+                                    <div>
+                                        <h5 class="fw-bold text-white mb-0">Healthcare Support & Feedback</h5>
+                                        <div class="small text-muted">Reach out to our clinical support and governance team</div>
+                                    </div>
+                                </div>
+
+                                <form id="contactForm" onsubmit="handleContactSubmit(event)">
+                                    <div class="mb-3">
+                                        <label class="form-label-custom">Your Full Name</label>
+                                        <input type="text" id="contactName" class="form-control" placeholder="e.g. John Doe" required>
+                                    </div>
+
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label-custom">Email Address</label>
+                                            <input type="email" id="contactEmail" class="form-control" placeholder="name@example.com" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label-custom">Inquiry Category</label>
+                                            <select id="contactCategory" class="form-select">
+                                                <option value="clinical_inquiry">Medical & Clinical Inquiry</option>
+                                                <option value="report_review">Medical Report Second Opinion</option>
+                                                <option value="technical">Technical Support</option>
+                                                <option value="general">General Feedback</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label-custom">Subject</label>
+                                        <input type="text" id="contactSubject" class="form-control" placeholder="Summary of your question or feedback..." required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label-custom">Message / Question</label>
+                                        <textarea id="contactMessage" class="form-control" rows="4" placeholder="Provide details regarding your inquiry..." required></textarea>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-glow-primary w-100 py-2.5 fw-semibold" id="contactSubmitBtn">
+                                        <i class="bi bi-send-fill me-1"></i> Submit Healthcare Inquiry
+                                    </button>
+                                </form>
+
+                                <div id="contactSuccessMsg" class="alert alert-success mt-3 d-none">
+                                    <i class="bi bi-check-circle-fill me-1"></i> <span id="contactSuccessText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="py-3 mt-auto border-top border-secondary border-opacity-25 bg-dark bg-opacity-75 small text-center text-muted">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <strong>MediCare AI</strong> &copy; 2026. Empowering informed healthcare decisions.
+            </div>
+            <div>
+                <span class="badge bg-secondary-subtle text-secondary me-2">Offline Safe + Groq LLM</span>
+                <span>Educational medical information. Always consult a licensed doctor.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- 1. API KEY CONFIGURATION MODAL -->
+    <div class="modal fade" id="apiKeyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-glass">
+                <div class="modal-header modal-header-glass">
+                    <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2">
+                        <i class="bi bi-key-fill text-warning"></i> AI Engine & API Key Configuration
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="small text-muted mb-3">
+                        The assistant uses high-speed Groq LLM inference. You can use the built-in system API key or specify your personal Groq API key.
+                    </p>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-white">Groq API Key</label>
+                        <input type="password" id="customApiKeyInput" class="form-control bg-dark text-white border-secondary" placeholder="Enter custom Groq API Key (gsk_...)" autocomplete="off">
+                        <div class="form-text text-muted small">Leave empty to use the system default preconfigured API key.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-white">Preferred AI Model</label>
+                        <select id="modelSelect" class="form-select bg-dark text-white border-secondary">
+                            <option value="qwen/qwen3.8-27b">qwen/qwen3.8-27b (Fast & Highly Accurate - Recommended)</option>
+                            <option value="openai/gpt-oss-120b">openai/gpt-oss-120b (Deep Clinical Reasoning)</option>
+                            <option value="openai/gpt-oss-20b">openai/gpt-oss-20b (Ultra Fast)</option>
+                            <option value="allam-2-7b">allam-2-7b (Multilingual)</option>
+                        </select>
+                    </div>
+
+                    <div id="apiKeyTestResult" class="small p-2 rounded mb-3 d-none"></div>
+
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-info btn-sm" onclick="testApiKeyConnection()">
+                            <i class="bi bi-activity me-1"></i> Test Connection
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetApiKey()">
+                            Reset Default
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer modal-footer-glass">
+                    <button type="button" class="btn btn-glass btn-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-glow-primary btn-sm" onclick="saveApiKey()">Save Key Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. LOGIN / REGISTER AUTH MODAL -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-glass">
+                <div class="modal-header modal-header-glass">
+                    <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2">
+                        <i class="bi bi-shield-lock-fill text-info"></i> Account Access
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    
+                    <!-- Auth Tabs -->
+                    <ul class="nav nav-pills nav-fill mb-3 gap-2" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active py-2 text-white" id="tab-login" data-bs-toggle="pill" data-bs-target="#pane-login">Sign In</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link py-2 text-white" id="tab-register" data-bs-toggle="pill" data-bs-target="#pane-register">Create Account</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- Sign In Pane -->
+                        <div class="tab-pane fade show active" id="pane-login">
+                            <form onsubmit="handleLoginSubmit(event)">
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted">Username</label>
+                                    <input type="text" id="loginUsername" class="form-control bg-dark text-white border-secondary" placeholder="Enter username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted">Password</label>
+                                    <input type="password" id="loginPassword" class="form-control bg-dark text-white border-secondary" placeholder="••••••••" required>
+                                </div>
+                                <div id="loginErrorMsg" class="alert alert-danger py-2 small d-none"></div>
+                                <button type="submit" class="btn btn-glow-primary w-100 mb-2">Sign In</button>
+                                
+                                <div class="text-center mt-3">
+                                    <button type="button" class="btn btn-sm btn-outline-info rounded-pill py-1 px-3 small mb-2" onclick="quickFillDemoAdmin()">
+                                        <i class="bi bi-lightning-fill"></i> Fill Demo Admin (admin / Admin@12345)
+                                    </button>
+                                    <div class="small text-muted mt-1">
+                                        Don't have an account? <a href="javascript:void(0)" class="text-info fw-semibold text-decoration-none" onclick="switchAuthTab('register')">Register here</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Register Pane -->
+                        <div class="tab-pane fade" id="pane-register">
+                            <form onsubmit="handleRegisterSubmit(event)">
+                                <div class="mb-2">
+                                    <label class="form-label small text-muted">Choose Username</label>
+                                    <input type="text" id="regUsername" class="form-control bg-dark text-white border-secondary" placeholder="Username" required>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small text-muted">Email Address</label>
+                                    <input type="email" id="regEmail" class="form-control bg-dark text-white border-secondary" placeholder="name@email.com" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted">Password</label>
+                                    <input type="password" id="regPassword" class="form-control bg-dark text-white border-secondary" placeholder="••••••••" required>
+                                </div>
+                                <div id="regErrorMsg" class="alert alert-danger py-2 small d-none"></div>
+                                <button type="submit" class="btn btn-glow-emerald w-100 mb-2">Create Account</button>
+                                <div class="text-center small text-muted mt-2">
+                                    Already have an account? <a href="javascript:void(0)" class="text-info fw-semibold text-decoration-none" onclick="switchAuthTab('login')">Sign in here</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. HISTORY DETAIL MODAL -->
+    <div class="modal fade" id="historyDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content modal-content-glass">
+                <div class="modal-header modal-header-glass">
+                    <h5 class="modal-title fw-bold text-white" id="historyDetailTitle">Consultation Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
+                    <div class="mb-3 p-3 rounded bg-dark border border-secondary border-opacity-25">
+                        <div class="small text-muted fw-bold mb-1">USER PROBLEM / INPUT:</div>
+                        <div id="historyDetailInput" class="text-white" style="white-space: pre-wrap;"></div>
+                    </div>
+                    <div class="p-3 rounded bg-dark border border-secondary border-opacity-25">
+                        <div class="small text-info fw-bold mb-2">CLINICAL SOLUTION & ADVISORY:</div>
+                        <div id="historyDetailSolution" class="text-body" style="line-height: 1.6;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer modal-footer-glass">
+                    <button type="button" class="btn btn-glass btn-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-glow-primary btn-sm" onclick="copyHistoryModalSolution()">
+                        <i class="bi bi-clipboard me-1"></i> Copy Advice
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core Application Logic -->
+    <script>
+        const API_BASE = "";
+        let currentSessionId = localStorage.getItem("medicare_session_id") || "sess_" + Math.random().toString(36).substring(2, 10);
+        localStorage.setItem("medicare_session_id", currentSessionId);
+
+        let attachedReportText = null;
+        let attachedReportTitle = null;
+        let selectedFileObject = null;
+        let currentUser = null;
+        let allHistoryItems = [];
+        let currentHistoryFilter = "all";
+
+        // Sample Reports embedded for fast 1-click testing
+        const SAMPLE_REPORTS = {
+            cbc: `SUNRISE DIAGNOSTIC LABORATORY
+COMPLETE BLOOD COUNT (CBC) REPORT
+Patient Name: Ravi Kumar | Age: 34 Years | Gender: Male
+Patient ID: SDL-100234 | Date: 12-Aug-2026
+
+TEST NAME                 RESULT      UNIT         REFERENCE RANGE        FLAG
+Hemoglobin (Hb)           10.8        g/dL         13.0 - 17.0            LOW
+Total RBC Count           4.1         million/uL   4.5 - 5.5              LOW
+Hematocrit (PCV)          33.5        %            40 - 50                LOW
+MCV                       71.0        fL           83 - 101               LOW
+MCH                       23.5        pg           27 - 32                LOW
+MCHC                      31.9        g/dL         31.5 - 34.5            Normal
+RDW                       16.2        %            11.6 - 14.0            HIGH
+Total WBC Count           7,400       cells/uL     4,000 - 11,000         Normal
+Platelet Count            310,000     cells/uL     150,000 - 410,000      Normal
+
+LABORATORY COMMENTS:
+Peripheral smear shows microcytic hypochromic red cells with mild anisocytosis. Findings indicate microcytic anemia.`,
+
+            lipid: `METRO HEALTH DIAGNOSTIC CLINIC
+PATIENT LAB REPORT - LIPID PANEL & CARDIOVASCULAR RISK ASSESSMENT
+Date of Collection: October 5, 2026
+Patient Name: Rajesh Sharma | Age: 48 | Gender: Male
+Referred By: Dr. A. K. Verma, MD (Cardiology)
+
+TEST PARAMETER              RESULT       UNIT       REFERENCE RANGE    STATUS
+Total Cholesterol           245          mg/dL      < 200 mg/dL        HIGH
+HDL (Good Cholesterol)       38          mg/dL      > 40 mg/dL         LOW
+LDL (Bad Cholesterol)       162          mg/dL      < 100 mg/dL        HIGH
+Triglycerides               210          mg/dL      < 150 mg/dL        HIGH
+VLDL Cholesterol             42          mg/dL      5 - 40 mg/dL       ELEVATED
+Cholesterol / HDL Ratio     6.44                    < 4.5              HIGH RISK
+Fasting Blood Sugar (FBS)   118          mg/dL      70 - 99 mg/dL      PREDIABETIC
+
+CLINICAL IMPRESSION:
+1. Significant dyslipidemia characterized by elevated Total Cholesterol (245 mg/dL), high LDL (162 mg/dL), and low protective HDL (38 mg/dL).
+2. Atherogenic index indicates a moderately elevated risk for coronary artery disease.
+3. Impaired Fasting Glucose (118 mg/dL) suggests early prediabetic metabolic changes.`,
+
+            diabetes: `CITY CARE ENDOCRINOLOGY CENTER
+PATIENT LAB REPORT - HbA1c & DIABETES PANEL
+Date of Collection: October 7, 2026
+Patient Name: Sunita Patel | Age: 52 | Gender: Female
+Referred By: Dr. R. N. Mehta, MD (Endocrinology)
+
+TEST PARAMETER              RESULT       UNIT       REFERENCE RANGE    STATUS
+HbA1c (Glycated Hb)         8.4          %          < 5.7 % (Normal)   ELEVATED
+Estimated Avg Glucose (eAG) 194          mg/dL      < 117 mg/dL        HIGH
+Fasting Plasma Glucose      168          mg/dL      70 - 99 mg/dL      HIGH
+Post-Prandial Glucose 2hr   235          mg/dL      < 140 mg/dL        HIGH
+Serum Creatinine            0.9          mg/dL      0.6 - 1.1 mg/dL    NORMAL
+eGFR                        88           mL/min     > 60 mL/min        NORMAL
+
+CLINICAL IMPRESSION:
+1. HbA1c of 8.4% indicates suboptimal glycemic control over the preceding 90 days.
+2. Fasting and post-prandial glucose levels consistently elevated above targets.
+3. Renal markers remain intact.`,
+
+            thyroid_liver: `GREENFIELD HEALTH DIAGNOSTICS
+THYROID, KIDNEY AND LIVER FUNCTION PANEL
+Patient Name: Anil Verma | Age: 45 Years | Gender: Male
+Date: 21-Sep-2026
+
+THYROID FUNCTION
+TEST NAME                 RESULT      UNIT         REFERENCE RANGE        FLAG
+TSH                       7.8         uIU/mL       0.4 - 4.0              HIGH
+Free T4                   0.8         ng/dL        0.8 - 1.8              Normal
+Total T3                  96          ng/dL        80 - 200               Normal
+
+LIVER FUNCTION
+SGOT (AST)                52          U/L          10 - 40                HIGH
+SGPT (ALT)                68          U/L          7 - 56                 HIGH
+Alkaline Phosphatase      95          U/L          44 - 147               Normal
+
+LABORATORY COMMENT:
+TSH above reference range (Subclinical Hypothyroidism). Mildly raised liver enzymes (AST/ALT).`,
+
+            discharge: `LAKEVIEW GENERAL HOSPITAL
+DISCHARGE SUMMARY REPORT
+Patient Name: Suresh Rao | Age: 58 | Gender: Male
+Admission: 10-Sep-2026 | Discharge: 15-Sep-2026
+
+DIAGNOSIS AT DISCHARGE:
+1. Community acquired pneumonia (right lower lobe)
+2. Type 2 diabetes mellitus (known case, 8 years)
+3. Hypertension (known case)
+
+HOSPITAL COURSE:
+Admitted with fever (101.8°F), productive cough, and shortness of breath. Chest X-ray showed right lower lobe consolidation. WBC 14,800 cells/uL, CRP 86 mg/L. Treated with IV antibiotics, bronchodilators, and insulin. Oxygen saturation improved from 91% to 97% on room air at discharge.
+
+MEDICINES ADVISED AT DISCHARGE:
+1. Tab. Amoxicillin-Clavulanate 625 mg - twice daily for 4 days
+2. Tab. Metformin 500 mg - twice daily after meals
+3. Tab. Amlodipine 5 mg - once daily in the morning`,
+
+            radiology: `METRO IMAGING CENTRE
+DEPARTMENT OF RADIOLOGY
+
+Patient Name: Meena Patel | Age: 61 Years | Gender: Female
+Patient ID: MIC-30418 | Study Date: 05-Oct-2026
+Study: X-RAY CHEST PA VIEW | Referred By: Dr. K. Iyer
+
+CLINICAL HISTORY:
+Persistent cough for 3 weeks. Mild breathlessness on exertion. Non-smoker.
+
+TECHNIQUE:
+Single frontal (PA) chest radiograph obtained in erect position.
+
+FINDINGS:
+- Trachea is central.
+- Heart size is within normal limits. Cardiothoracic ratio is approximately 0.48.
+- Patchy area of increased opacity seen in right lower zone, consistent with airspace consolidation.
+- Mild blunting of right costophrenic angle, which may represent a small pleural effusion.
+- Left lung field is clear.
+- Both hila are normal in size and position.
+
+IMPRESSION:
+1. Right lower zone airspace opacity, consistent with infective process (Pneumonia). Clinical correlation recommended.
+2. Possible small right pleural effusion.
+3. Follow-up imaging after treatment suggested.`
+        };
+
+        // Initialize on DOM Load
+        document.addEventListener("DOMContentLoaded", () => {
+            initAuth();
+            initApiKeyUI();
+            initDragAndDrop();
+        });
+
+        // ================= SPA VIEW ROUTING =================
+        function showView(viewName) {
+            document.querySelectorAll(".spa-view").forEach(v => v.classList.remove("active-view"));
+            document.querySelectorAll(".nav-link-custom").forEach(l => l.classList.remove("active"));
+
+            const targetView = document.getElementById(`view-${viewName}`);
+            const targetNav = document.getElementById(`nav-${viewName}`);
+            if(targetView) targetView.classList.add("active-view");
+            if(targetNav) targetNav.classList.add("active");
+
+            window.scrollTo({top: 0, behavior: "smooth"});
+        }
+
+        // ================= CHATBOT LOGIC =================
+        function fillQuery(text) {
+            const input = document.getElementById("chatInput");
+            input.value = text;
+            input.focus();
+        }
+
+        function handleChatKeyDown(e) {
+            if(e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSendChat(e);
+            }
+        }
+
+        async function handleSendChat(e) {
+            e.preventDefault();
+            const input = document.getElementById("chatInput");
+            const q = input.value.trim();
+            if(!q) return;
+
+            const box = document.getElementById("chatThread");
+            box.innerHTML += `<div class="msg-user-bubble"><strong>You:</strong> ${escapeHtml(q)}</div>`;
+            input.value = "";
+            box.scrollTop = box.scrollHeight;
+
+            const loadingId = "load_" + Date.now();
+            box.innerHTML += `
+                <div class="msg-assistant-bubble" id="${loadingId}">
+                    <div class="d-flex align-items-center gap-2 text-info">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                        <span>Evaluating symptoms, safety parameters, and generating clinical solutions...</span>
+                    </div>
+                </div>
+            `;
+            box.scrollTop = box.scrollHeight;
+
+            const customKey = localStorage.getItem("medicare_groq_api_key") || "";
+            const token = localStorage.getItem("medicare_jwt_token");
+            const headers = {"Content-Type": "application/json"};
+            if(token) headers["Authorization"] = `Bearer ${token}`;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/chat/query`, {
+                    method: "POST",
+                    headers: headers,
+                    body: JSON.stringify({
+                        query: q,
+                        api_key: customKey || null,
+                        report_context: attachedReportText || null,
+                        session_id: currentSessionId
+                    })
+                });
+
+                const data = await res.json();
+                const loader = document.getElementById(loadingId);
+                if(loader) loader.remove();
+
+                if (!res.ok) {
+                    const errorMsg = data.detail || data.message || `Server error (${res.status})`;
+                    box.innerHTML += `<div class="msg-assistant-bubble text-danger"><i class="bi bi-exclamation-octagon me-1"></i> ${escapeHtml(errorMsg)}</div>`;
+                    box.scrollTop = box.scrollHeight;
+                    return;
+                }
+
+                let html = "";
+                if(data.safety_category === "A_EMERGENCY") {
+                    html += `<div class="emergency-banner-box">${formatMarkdown(data.answer)}</div>`;
+                } else {
+                    html += `<div class="msg-assistant-bubble">`;
+                    html += formatMarkdown(data.answer);
+                    if(data.citations && data.citations.length > 0) {
+                        html += `<div class="mt-3 pt-2 border-top border-secondary border-opacity-25 small">
+                            <strong class="text-info">Verified Medical Citations:</strong><br>`;
+                        data.citations.forEach(c => {
+                            html += `<span class="badge bg-info-subtle text-info border border-info border-opacity-25 me-1 mb-1">[${c.citation_id}] ${escapeHtml(c.publisher)} - ${escapeHtml(c.title)} (p.${c.page_number})</span> `;
+                        });
+                        html += `</div>`;
+                    }
+                    html += `</div>`;
+                }
+                box.innerHTML += html;
+                box.scrollTop = box.scrollHeight;
+
+            } catch(err) {
+                const loader = document.getElementById(loadingId);
+                if(loader) loader.remove();
+                box.innerHTML += `<div class="msg-assistant-bubble text-danger"><i class="bi bi-exclamation-octagon me-1"></i> Unable to connect to server. Please verify server status or API key.</div>`;
+            }
+        }
+
+        async function clearChatThread() {
+            if(!confirm("Are you sure you want to clear the chat conversation?")) return;
+
+            const token = localStorage.getItem("medicare_jwt_token");
+            const headers = {};
+            if(token) headers["Authorization"] = `Bearer ${token}`;
+
+            try {
+                await fetch(`${API_BASE}/api/history?session_id=${currentSessionId}`, {
+                    method: "DELETE",
+                    headers: headers
+                });
+            } catch(e) {
+                console.error("Error clearing session history on backend", e);
+            }
+
+            currentSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
+            localStorage.setItem("medicare_session_id", currentSessionId);
+
+            document.getElementById("chatThread").innerHTML = `
+                <div class="msg-assistant-bubble">
+                    <div class="fw-bold text-info mb-1"><i class="bi bi-heart-pulse me-1"></i> Hello! I am your AI Healthcare Information Assistant.</div>
+                    <p class="mb-2">Describe what health symptoms or problems you are experiencing. I will provide:</p>
+                    <ul class="mb-1 small">
+                        <li><strong>Understanding the Problem:</strong> Medical overview of possible causes and mechanisms</li>
+                        <li><strong>Recommended Solutions:</strong> Practical self-care remedies, home care, and relief steps</li>
+                        <li><strong>Lifestyle & Dietary Support:</strong> Nutrition, hydration, and daily routine habits</li>
+                        <li><strong>Red Flag Alerts:</strong> Key warning signs when to seek immediate doctor or hospital care</li>
+                        <li><strong>Questions for Your Doctor:</strong> 3 targeted questions to bring to your consultation</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+
+
+        // ================= DOCUMENT VERIFICATION & SOLUTIONS (SAME PAGE) =================
+        function initDragAndDrop() {
+            const dropZone = document.getElementById("dropZone");
+            if(!dropZone) return;
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.add('dragover');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.remove('dragover');
+                }, false);
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if(files && files[0]) {
+                    handleFileSelected({files: files});
+                }
+            }, false);
+        }
+
+        function handleFileSelected(input) {
+            if(!input.files || !input.files[0]) return;
+            selectedFileObject = input.files[0];
+            document.getElementById("selectedFileNameText").textContent = selectedFileObject.name;
+            document.getElementById("selectedFileNameBadge").classList.remove("d-none");
+            // Clear paste text if file is chosen
+            document.getElementById("pasteReportArea").value = "";
+        }
+
+        function clearSelectedFile() {
+            selectedFileObject = null;
+            document.getElementById("fileUploadInput").value = "";
+            document.getElementById("selectedFileNameBadge").classList.add("d-none");
+        }
+
+        function togglePasteArea() {
+            const area = document.getElementById("pasteReportArea");
+            area.classList.toggle("d-none");
+            if(!area.classList.contains("d-none")) {
+                area.focus();
+            }
+        }
+
+        function loadSampleReport(type) {
+            const content = SAMPLE_REPORTS[type] || "";
+            const area = document.getElementById("pasteReportArea");
+            area.value = content;
+            area.classList.remove("d-none");
+            clearSelectedFile();
+            area.scrollIntoView({behavior: "smooth", block: "center"});
+        }
+
+        let currentDocumentRawText = "";
+        let currentDocumentFilename = "";
+
+        async function handleVerifyAndSolve() {
+            const pasteText = document.getElementById("pasteReportArea").value.trim();
+            if(!selectedFileObject && !pasteText) {
+                alert("Please select a document file (PDF, TXT, DOCX) or paste report text.");
+                return;
+            }
+
+            const loadIndicator = document.getElementById("verifyLoadingState");
+            const solutionCard = document.getElementById("docSolutionCard");
+            const verifyBtn = document.getElementById("verifyBtn");
+            const solutionBox = document.getElementById("solutionCardBox");
+
+            loadIndicator.classList.remove("d-none");
+            solutionCard.classList.add("d-none");
+            if(solutionBox) solutionBox.classList.add("d-none");
+            verifyBtn.disabled = true;
+
+            const customKey = localStorage.getItem("medicare_groq_api_key") || "";
+            const token = localStorage.getItem("medicare_jwt_token");
+            const formData = new FormData();
+
+            if(selectedFileObject) {
+                formData.append("file", selectedFileObject);
+            } else {
+                formData.append("raw_text", pasteText);
+            }
+
+            if(customKey) formData.append("custom_api_key", customKey);
+            formData.append("session_id", currentSessionId);
+
+            const headers = {};
+            if(token) headers["Authorization"] = `Bearer ${token}`;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/documents/verify-and-solve`, {
+                    method: "POST",
+                    headers: headers,
+                    body: formData
+                });
+
+                const data = await res.json();
+                loadIndicator.classList.add("d-none");
+                verifyBtn.disabled = false;
+
+                if(!res.ok) {
+                    alert(`Verification failed: ${data.detail || 'Error processing report'}`);
+                    return;
+                }
+
+                // Render Summary from ReportSummarizerAgent
+                solutionCard.classList.remove("d-none");
+                document.getElementById("docTitleDisplay").textContent = data.filename;
+                document.getElementById("docHashDisplay").textContent = data.file_hash.substring(0, 16) + "...";
+                document.getElementById("docConfidenceBadge").textContent = data.verification.confidence_score + " Match";
+                document.getElementById("docAbnormalBadge").textContent = (data.verification.abnormal_indicators_count || 0) + " Flags Found";
+
+                const summaryBody = document.getElementById("docSummaryContent");
+                summaryBody.innerHTML = formatMarkdown(data.summary_content || data.summary);
+
+                currentDocumentRawText = data.raw_text || pasteText;
+                currentDocumentFilename = data.filename;
+
+                // Store initial report context for chatting
+                attachedReportText = `Document: ${data.filename}\n${data.summary_content || data.summary}`;
+                attachedReportTitle = data.filename;
+
+                solutionCard.scrollIntoView({behavior: "smooth", block: "nearest"});
+
+            } catch(e) {
+                loadIndicator.classList.add("d-none");
+                verifyBtn.disabled = false;
+                alert("Failed to connect to verification server.");
+            }
+        }
+
+        async function handleGenerateSolution() {
+            if(!currentDocumentRawText) {
+                alert("Please verify and summarize a document first.");
+                return;
+            }
+
+            const solutionBtn = document.getElementById("solutionBtn");
+            const loadingState = document.getElementById("solutionLoadingState");
+            const solutionBox = document.getElementById("solutionCardBox");
+            const solutionBody = document.getElementById("docSolutionContent");
+
+            solutionBtn.disabled = true;
+            loadingState.classList.remove("d-none");
+            solutionBox.classList.add("d-none");
+
+            const customKey = localStorage.getItem("medicare_groq_api_key") || "";
+            const token = localStorage.getItem("medicare_jwt_token");
+            const headers = {"Content-Type": "application/json"};
+            if(token) headers["Authorization"] = `Bearer ${token}`;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/documents/generate-solution`, {
+                    method: "POST",
+                    headers: headers,
+                    body: JSON.stringify({
+                        raw_text: currentDocumentRawText,
+                        filename: currentDocumentFilename,
+                        custom_api_key: customKey,
+                        session_id: currentSessionId
+                    })
+                });
+
+                const data = await res.json();
+                loadingState.classList.add("d-none");
+                solutionBtn.disabled = false;
+
+                if(!res.ok) {
+                    alert(`Solution generation failed: ${data.detail || 'Error generating solution'}`);
+                    return;
+                }
+
+                // Render 5-section solution plan from RecommendedSolutionAgent
+                solutionBox.classList.remove("d-none");
+                solutionBody.innerHTML = formatMarkdown(data.solution);
+
+                // Update report context with full solution plan
+                attachedReportText = `Document: ${currentDocumentFilename}\n${data.solution}`;
+
+                solutionBox.scrollIntoView({behavior: "smooth", block: "nearest"});
+
+            } catch(e) {
+                loadingState.classList.add("d-none");
+                solutionBtn.disabled = false;
+                alert("Failed to connect to Solution Agent.");
+            }
+        }
+
+        function sendReportToChat() {
+            if(!attachedReportText) return;
+            showView('chat');
+            const alertBox = document.getElementById("attachedReportAlert");
+            document.getElementById("attachedReportName").textContent = attachedReportTitle;
+            alertBox.classList.remove("d-none");
+
+            const input = document.getElementById("chatInput");
+            input.value = `Based on my uploaded report (${attachedReportTitle}), what foods should I strictly avoid, and what lifestyle plan should I start today?`;
+            input.focus();
+            input.scrollIntoView({behavior: "smooth", block: "center"});
+        }
+
+        function detachReportContext() {
+            attachedReportText = null;
+            attachedReportTitle = null;
+            document.getElementById("attachedReportAlert").classList.add("d-none");
+        }
+
+        function copyDocumentSolution() {
+            const text = document.getElementById("docSolutionContent").innerText || document.getElementById("docSummaryContent").innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Document text copied to clipboard!");
+            });
+        }
+
+        // ================= CONTACT FORM =================
+        async function handleContactSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById("contactSubmitBtn");
+            btn.disabled = true;
+
+            const payload = {
+                name: document.getElementById("contactName").value.trim(),
+                email: document.getElementById("contactEmail").value.trim(),
+                category: document.getElementById("contactCategory").value,
+                subject: document.getElementById("contactSubject").value.trim(),
+                message: document.getElementById("contactMessage").value.trim()
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/api/contact/submit`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                btn.disabled = false;
+
+                const msg = document.getElementById("contactSuccessMsg");
+                document.getElementById("contactSuccessText").innerHTML = `
+                    <strong>Inquiry Processed Successfully!</strong><br>
+                    <i class="bi bi-envelope-check me-1"></i> Email dispatched to <strong>${data.email_dispatched_to || 'battulasarath751@gmail.com'}</strong>.<br>
+                    <small>Ticket Reference ID: <strong>${data.ticket_id}</strong></small>
+                `;
+                msg.classList.remove("d-none");
+                document.getElementById("contactForm").reset();
+            } catch(e) {
+                btn.disabled = false;
+                alert("Failed to submit inquiry. Please try again.");
+            }
+        }
+
+        // ================= API KEY MANAGEMENT =================
+        function initApiKeyUI() {
+            const customKey = localStorage.getItem("medicare_groq_api_key");
+            const statusLabel = document.getElementById("apiKeyStatusLabel");
+            const modelIndicator = document.getElementById("activeModelIndicator");
+
+            if(customKey) {
+                statusLabel.innerHTML = `<span class="badge bg-success">Custom Key</span>`;
+                modelIndicator.textContent = "AI Model: Groq (Custom Key)";
+                document.getElementById("customApiKeyInput").value = customKey;
+            } else {
+                statusLabel.innerHTML = `API Key: Active`;
+                modelIndicator.textContent = "AI Model: Groq (System Key)";
+            }
+        }
+
+        function openApiKeyModal() {
+            const modal = new bootstrap.Modal(document.getElementById("apiKeyModal"));
+            modal.show();
+        }
+
+        function saveApiKey() {
+            const val = document.getElementById("customApiKeyInput").value.trim();
+            if(val) {
+                localStorage.setItem("medicare_groq_api_key", val);
+            } else {
+                localStorage.removeItem("medicare_groq_api_key");
+            }
+            initApiKeyUI();
+            bootstrap.Modal.getInstance(document.getElementById("apiKeyModal")).hide();
+            alert("API Key configuration updated successfully!");
+        }
+
+        function resetApiKey() {
+            localStorage.removeItem("medicare_groq_api_key");
+            document.getElementById("customApiKeyInput").value = "";
+            initApiKeyUI();
+            alert("Reset to system default API key.");
+        }
+
+        async function testApiKeyConnection() {
+            const testDiv = document.getElementById("apiKeyTestResult");
+            const key = document.getElementById("customApiKeyInput").value.trim();
+            testDiv.className = "small p-2 rounded mb-3 bg-secondary bg-opacity-25 text-white";
+            testDiv.textContent = "Testing API key connection to Groq Cloud...";
+            testDiv.classList.remove("d-none");
+
+            try {
+                const res = await fetch(`${API_BASE}/api/health/test-key`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        api_key: key || null
+                    })
+                });
+                const data = await res.json();
+                if(res.ok && data.success) {
+                    testDiv.className = "small p-2 rounded mb-3 bg-success bg-opacity-25 text-success border border-success border-opacity-25";
+                    testDiv.textContent = data.message || "✅ Success: API Key connected successfully to Groq AI!";
+                } else {
+                    testDiv.className = "small p-2 rounded mb-3 bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25";
+                    testDiv.textContent = `⚠️ Connection error: ${data.message || 'Failed to authenticate'}`;
+                }
+            } catch(e) {
+                testDiv.className = "small p-2 rounded mb-3 bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25";
+                testDiv.textContent = "⚠️ Request failed to reach backend.";
+            }
+        }
+
+        // ================= AUTHENTICATION MODAL & LOGIC =================
+        function initAuth() {
+            const token = localStorage.getItem("medicare_jwt_token");
+            const userStr = localStorage.getItem("medicare_user");
+            if(token && userStr) {
+                try {
+                    currentUser = JSON.parse(userStr);
+                    renderAuthNavbar();
+                } catch(e) {
+                    logout();
+                }
+            }
+        }
+
+        function renderAuthNavbar() {
+            const container = document.getElementById("authNavbarContainer");
+            if(currentUser) {
+                container.innerHTML = `
+                    <div class="d-flex align-items-center gap-2 flex-nowrap">
+                        <span class="badge bg-info-subtle text-info border border-info border-opacity-25 py-2 px-3 rounded-pill">
+                            ${escapeHtml(currentUser.username)}
+                        </span>
+                        <button class="btn btn-outline-danger btn-sm" onclick="logout()" title="Logout">
+                            Logout
+                        </button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button class="btn btn-glow-primary btn-sm px-3" onclick="openAuthModal('login')">
+                        Login
+                    </button>
+                `;
+            }
+        }
+
+        function openAuthModal(tab = 'login') {
+            const modalEl = document.getElementById("authModal");
+            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            switchAuthTab(tab);
+            modal.show();
+        }
+
+        function switchAuthTab(tab) {
+            if(tab === 'register') {
+                const regBtn = document.getElementById("tab-register");
+                if(regBtn) {
+                    const tabTrigger = new bootstrap.Tab(regBtn);
+                    tabTrigger.show();
+                }
+            } else {
+                const loginBtn = document.getElementById("tab-login");
+                if(loginBtn) {
+                    const tabTrigger = new bootstrap.Tab(loginBtn);
+                    tabTrigger.show();
+                }
+            }
+        }
+
+        function quickFillDemoAdmin() {
+            document.getElementById("loginUsername").value = "admin";
+            document.getElementById("loginPassword").value = "Admin@12345";
+        }
+
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            const u = document.getElementById("loginUsername").value.trim();
+            const p = document.getElementById("loginPassword").value;
+            const errBox = document.getElementById("loginErrorMsg");
+            errBox.classList.add("d-none");
+
+            const formData = new URLSearchParams();
+            formData.append("username", u);
+            formData.append("password", p);
+
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/token`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                    body: formData
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    localStorage.setItem("medicare_jwt_token", data.access_token);
+                    localStorage.setItem("medicare_user", JSON.stringify(data.user));
+                    currentUser = data.user;
+                    renderAuthNavbar();
+                    bootstrap.Modal.getInstance(document.getElementById("authModal")).hide();
+                    alert(`Welcome back, ${data.user.username}!`);
+                } else {
+                    errBox.textContent = data.detail || "Invalid credentials.";
+                    errBox.classList.remove("d-none");
+                }
+            } catch(err) {
+                errBox.textContent = "Server connection failed.";
+                errBox.classList.remove("d-none");
+            }
+        }
+
+        async function handleRegisterSubmit(e) {
+            e.preventDefault();
+            const u = document.getElementById("regUsername").value.trim();
+            const em = document.getElementById("regEmail").value.trim();
+            const p = document.getElementById("regPassword").value;
+            const errBox = document.getElementById("regErrorMsg");
+            errBox.classList.add("d-none");
+
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/register`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({username: u, email: em, password: p})
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    alert("Account registered! Please sign in with your credentials.");
+                    document.getElementById("tab-login").click();
+                    document.getElementById("loginUsername").value = u;
+                } else {
+                    errBox.textContent = data.detail || "Registration failed.";
+                    errBox.classList.remove("d-none");
+                }
+            } catch(err) {
+                errBox.textContent = "Server connection failed.";
+                errBox.classList.remove("d-none");
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("medicare_jwt_token");
+            localStorage.removeItem("medicare_user");
+            currentUser = null;
+            renderAuthNavbar();
+            alert("Signed out successfully.");
+        }
+
+        // ================= HELPERS =================
+        function escapeHtml(str) {
+            if(!str) return "";
+            return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function formatMarkdown(text) {
+            if(!text) return "";
+            let formatted = escapeHtml(text);
+            
+            // Headers
+            formatted = formatted.replace(/^### (.*$)/gim, '<h4 class="text-info fw-bold mt-3 mb-2">$1</h4>');
+            formatted = formatted.replace(/^## (.*$)/gim, '<h3 class="text-info fw-bold mt-3 mb-2">$1</h3>');
+            formatted = formatted.replace(/^# (.*$)/gim, '<h2 class="text-info fw-bold mt-3 mb-2">$1</h2>');
+
+            // Bold & italics
+            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+            // Lists
+            formatted = formatted.replace(/^\- (.*$)/gim, '<li>$1</li>');
+            formatted = formatted.replace(/^\* (.*$)/gim, '<li>$1</li>');
+
+            // Line breaks
+            formatted = formatted.replace(/\n/g, '<br>');
+
+            return formatted;
+        }
+    </script>
+</body>
+</html>

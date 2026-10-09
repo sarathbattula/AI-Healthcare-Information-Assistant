@@ -1,0 +1,20 @@
+ST. JUDE MEMORIAL HOSPITAL
+PATIENT DISCHARGE SUMMARY REPORT
+Admission Date: October 1, 2026 | Discharge Date: October 4, 2026
+Patient Name: Anita Roy | Age: 42 | Gender: Female
+Attending Physician: Dr. P. K. Bose, MD (Pulmonology)
+
+PRIMARY DIAGNOSIS:
+Acute Bacterial Bronchitis with mild pleuritic chest discomfort.
+
+HOSPITAL COURSE & TREATMENT:
+- Admitted with productive cough, fever (101.8°F), and mild shortness of breath.
+- Chest X-Ray revealed bilateral bronchial wall thickening; no focal lobar consolidation.
+- Administered intravenous hydration, oral azithromycin, bronchodilator nebulization, and antipyretics.
+- Patient stabilized with resolution of fever and improved oxygen saturation (98% on room air).
+
+DISCHARGE INSTRUCTIONS & CARE:
+- Complete 5-day oral antibiotic course as prescribed.
+- Maintain adequate oral hydration (2.5 - 3 liters water daily).
+- Rest at home for 5-7 days; avoid dust and smoke exposure.
+- Return to hospital immediately if high fever recurs or breathing difficulty worsens.

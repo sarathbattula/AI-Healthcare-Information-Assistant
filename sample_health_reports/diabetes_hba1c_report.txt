@@ -1,0 +1,25 @@
+CITY CARE ENDOCRINOLOGY CENTER
+PATIENT LAB REPORT - HbA1c & DIABETES PANEL
+Date of Collection: October 7, 2026
+Patient Name: Sunita Patel | Age: 52 | Gender: Female
+Referred By: Dr. R. N. Mehta, MD (Endocrinology)
+
+--------------------------------------------------------------------------------
+TEST PARAMETER              RESULT       UNIT       REFERENCE RANGE    STATUS
+--------------------------------------------------------------------------------
+HbA1c (Glycated Hb)         8.4          %          < 5.7 % (Normal)   ELEVATED
+Estimated Avg Glucose (eAG) 194          mg/dL      < 117 mg/dL        HIGH
+Fasting Plasma Glucose      168          mg/dL      70 - 99 mg/dL      HIGH
+Post-Prandial Glucose 2hr   235          mg/dL      < 140 mg/dL        HIGH
+Serum Creatinine            0.9          mg/dL      0.6 - 1.1 mg/dL    NORMAL
+eGFR                        88           mL/min     > 60 mL/min        NORMAL
+--------------------------------------------------------------------------------
+
+CLINICAL IMPRESSION:
+1. HbA1c of 8.4% indicates suboptimal glycemic control over the preceding 90 days.
+2. Fasting and post-prandial glucose levels consistently elevated above target ranges.
+3. Renal function markers (Creatinine, eGFR) remain within normal limits.
+
+ACTION PLAN:
+- Consult attending endocrinologist for medication adjustment.
+- Maintain consistent low-glycemic dietary routine and monitor blood glucose daily.

@@ -1,0 +1,36 @@
+SAMPLE REPORT - SYNTHETIC DATA FOR SOFTWARE TESTING ONLY. NOT A REAL PATIENT.
+
+METRO IMAGING CENTRE (fictional)
+DEPARTMENT OF RADIOLOGY
+
+Patient Name: Meena Patel (fictional)       Age/Sex: 61 Years / Female
+Patient ID: MIC-30418                       Study Date: 05-Oct-2026
+Study: X-RAY CHEST PA VIEW                  Referred By: Dr. K. Iyer (fictional)
+
+CLINICAL HISTORY
+Persistent cough for 3 weeks. Mild breathlessness on exertion. Non-smoker.
+
+TECHNIQUE
+Single frontal (PA) chest radiograph obtained in erect position.
+
+FINDINGS
+- Trachea is central.
+- Heart size is within normal limits. Cardiothoracic ratio is approximately 0.48.
+- A patchy area of increased opacity is seen in the right lower zone, consistent
+  with airspace consolidation.
+- Mild blunting of the right costophrenic angle, which may represent a small
+  pleural effusion.
+- Left lung field is clear.
+- Both hila are normal in size and position.
+- Visualised bony thorax and soft tissues appear unremarkable.
+
+IMPRESSION
+1. Right lower zone airspace opacity, which may represent an infective process
+   such as pneumonia. Clinical and laboratory correlation is advised.
+2. Possible small right pleural effusion.
+3. Follow-up imaging after treatment is suggested to confirm resolution.
+
+Radiologist: Dr. R. Menon (fictional), MD Radiology
+
+*** End of Report ***
+This is a computer generated sample report.

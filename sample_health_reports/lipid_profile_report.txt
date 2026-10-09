@@ -1,0 +1,28 @@
+METRO HEALTH DIAGNOSTIC CLINIC
+PATIENT LAB REPORT - LIPID PANEL & CARDIOVASCULAR RISK ASSESSMENT
+Date of Collection: October 5, 2026
+Patient Name: Rajesh Sharma | Age: 48 | Gender: Male
+Referred By: Dr. A. K. Verma, MD (Cardiology)
+
+--------------------------------------------------------------------------------
+TEST PARAMETER              RESULT       UNIT       REFERENCE RANGE    STATUS
+--------------------------------------------------------------------------------
+Total Cholesterol           245          mg/dL      < 200 mg/dL        HIGH
+HDL (Good Cholesterol)       38          mg/dL      > 40 mg/dL         LOW
+LDL (Bad Cholesterol)       162          mg/dL      < 100 mg/dL        HIGH
+Triglycerides               210          mg/dL      < 150 mg/dL        HIGH
+VLDL Cholesterol             42          mg/dL      5 - 40 mg/dL       ELEVATED
+Cholesterol / HDL Ratio     6.44                    < 4.5              HIGH RISK
+Fasting Blood Sugar (FBS)   118          mg/dL      70 - 99 mg/dL      PREDIABETIC
+--------------------------------------------------------------------------------
+
+CLINICAL IMPRESSION & FINDINGS:
+1. Significant dyslipidemia characterized by elevated Total Cholesterol (245 mg/dL), high LDL (162 mg/dL), hypertriglyceridemia (210 mg/dL), and low protective HDL (38 mg/dL).
+2. Atherogenic index indicates a moderately elevated risk for coronary artery disease (CAD).
+3. Impaired Fasting Glucose (118 mg/dL) suggests early prediabetic metabolic changes.
+
+RECOMMENDED LIFESTYLE & DIETARY GUIDELINES:
+- Reduce dietary saturated fats, trans-fats, and refined carbohydrates.
+- Increase soluble fiber intake (oats, legumes, flaxseeds).
+- Engage in at least 150 minutes of moderate aerobic exercise per week.
+- Schedule a follow-up consultation with your attending cardiologist.

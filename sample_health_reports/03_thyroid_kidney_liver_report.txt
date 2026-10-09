@@ -1,0 +1,36 @@
+SAMPLE REPORT - SYNTHETIC DATA FOR SOFTWARE TESTING ONLY. NOT A REAL PATIENT.
+
+GREENFIELD HEALTH DIAGNOSTICS (fictional)
+THYROID, KIDNEY AND LIVER FUNCTION PANEL
+
+Patient Name: Anil Verma (fictional)        Age/Sex: 45 Years / Male
+Patient ID: GHD-772901                      Sample Collected: 21-Sep-2026 09:05
+Referred By: Dr. P. Nair (fictional)        Report Date: 21-Sep-2026 15:20
+
+THYROID FUNCTION
+TEST NAME                 RESULT      UNIT         REFERENCE RANGE        FLAG
+TSH                       7.8         uIU/mL       0.4 - 4.0              HIGH
+Free T4                   0.8         ng/dL        0.8 - 1.8              Normal (lower limit)
+Total T3                  96          ng/dL        80 - 200               Normal
+
+KIDNEY FUNCTION
+Serum Creatinine          1.0         mg/dL        0.7 - 1.3              Normal
+Blood Urea Nitrogen       14          mg/dL        7 - 20                 Normal
+eGFR                      92          mL/min/1.73m2   > 90                Normal
+Uric Acid                 7.4         mg/dL        3.5 - 7.2              HIGH (mild)
+
+LIVER FUNCTION
+Total Bilirubin           0.9         mg/dL        0.2 - 1.2              Normal
+SGOT (AST)                52          U/L          10 - 40                HIGH
+SGPT (ALT)                68          U/L          7 - 56                 HIGH
+Alkaline Phosphatase      95          U/L          44 - 147               Normal
+Total Protein             7.1         g/dL         6.0 - 8.3              Normal
+Albumin                   4.3         g/dL         3.5 - 5.0              Normal
+
+LABORATORY COMMENT
+TSH is above the reference range with free T4 at the lower limit. Mildly raised
+liver enzymes (AST, ALT) can have multiple causes. Repeat testing and clinical
+correlation by a physician are recommended.
+
+*** End of Report ***
+This is a computer generated sample report.

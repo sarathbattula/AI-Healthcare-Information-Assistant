@@ -1,0 +1,22 @@
+METRO DIAGNOSTICS & THYROID CENTER
+PATIENT LAB REPORT - THYROID FUNCTION PANEL (T3, T4, TSH)
+Date of Collection: October 9, 2026
+Patient Name: Priya Sharma | Age: 36 | Gender: Female
+Referred By: Dr. V. K. Malhotra, MD (Endocrinology)
+
+--------------------------------------------------------------------------------
+TEST PARAMETER              RESULT       UNIT       REFERENCE RANGE    STATUS
+--------------------------------------------------------------------------------
+TSH (Thyroid Stimulating)   8.25         µIU/mL     0.45 - 4.50 µIU/mL ELEVATED
+Total T3 (Triiodothyronine) 75           ng/dL      80 - 200 ng/dL     LOW
+Free T4 (Thyroxine)         0.72         ng/dL      0.82 - 1.77 ng/dL  LOW
+Anti-TPO Antibodies         142          IU/mL      < 35 IU/mL         POSITIVE
+--------------------------------------------------------------------------------
+
+CLINICAL IMPRESSION:
+1. Primary Hypothyroidism with elevated TSH (8.25 µIU/mL) and decreased Free T4 (0.72 ng/dL).
+2. Strongly positive Anti-TPO antibodies (142 IU/mL) suggest Hashimoto's Thyroiditis (autoimmune thyroiditis).
+
+RECOMMENDED MANAGEMENT & ADVICE:
+- Consult endocrinologist for Levothyroxine hormone replacement therapy.
+- Monitor serum TSH every 6-8 weeks following medication initiation.

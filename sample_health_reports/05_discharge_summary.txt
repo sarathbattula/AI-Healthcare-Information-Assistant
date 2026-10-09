@@ -1,0 +1,45 @@
+SAMPLE REPORT - SYNTHETIC DATA FOR SOFTWARE TESTING ONLY. NOT A REAL PATIENT.
+
+LAKEVIEW GENERAL HOSPITAL (fictional)
+DISCHARGE SUMMARY
+
+Patient Name: Suresh Rao (fictional)        Age/Sex: 58 Years / Male
+Hospital No: LGH-2026-04417                 Ward: Medical Ward 3
+Date of Admission: 10-Sep-2026              Date of Discharge: 15-Sep-2026
+Consultant: Dr. V. Krishnan (fictional)     Department: General Medicine
+
+DIAGNOSIS AT DISCHARGE
+1. Community acquired pneumonia (right lower lobe)
+2. Type 2 diabetes mellitus (known case, 8 years)
+3. Hypertension (known case)
+
+PRESENTING COMPLAINTS
+Fever for 4 days, productive cough, and shortness of breath on walking.
+
+HOSPITAL COURSE
+Admitted with fever and cough. Chest X-ray showed right lower lobe consolidation.
+Blood tests showed raised white cell count (14,800 cells/uL) and CRP of 86 mg/L.
+Fasting blood sugar on admission was 238 mg/dL. He was treated with intravenous
+antibiotics for 3 days followed by oral antibiotics, oxygen support for 24 hours,
+and insulin for blood sugar control. Fever settled by day 3. Oxygen saturation
+improved from 91% on admission to 97% on room air at discharge.
+
+CONDITION AT DISCHARGE
+Afebrile, stable, walking independently. Oxygen saturation 97% on room air.
+Blood pressure 132/84 mmHg. Pulse 82 per minute.
+
+MEDICINES ADVISED AT DISCHARGE (as written by the treating team)
+1. Tab. Amoxicillin-Clavulanate 625 mg - twice daily for 4 more days
+2. Tab. Metformin 500 mg - twice daily after meals
+3. Tab. Amlodipine 5 mg - once daily in the morning
+4. Tab. Paracetamol 500 mg - only if fever or pain, as advised by doctor
+
+ADVICE
+- Complete the full antibiotic course. Take plenty of fluids and rest.
+- Monitor blood sugar at home and keep a diary.
+- Follow-up in General Medicine OPD after 7 days with a repeat chest X-ray.
+- Return to the emergency department immediately if there is high fever,
+  breathing difficulty, chest pain, confusion, or bluish lips.
+
+*** End of Summary ***
+This is a computer generated sample report.

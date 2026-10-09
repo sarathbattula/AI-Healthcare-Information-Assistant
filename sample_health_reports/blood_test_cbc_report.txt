@@ -1,0 +1,21 @@
+APEX PATHOLOGY LABORATORY
+COMPLETE BLOOD COUNT (CBC) & HEMATOLOGY REPORT
+Date of Collection: October 8, 2026
+Patient Name: Amit Kumar | Age: 35 | Gender: Male
+Referred By: Dr. S. N. Rao, MD (Internal Medicine)
+
+--------------------------------------------------------------------------------
+TEST PARAMETER              RESULT       UNIT       REFERENCE RANGE    STATUS
+--------------------------------------------------------------------------------
+Hemoglobin (Hb)             14.2         g/dL       13.0 - 17.0 g/dL   NORMAL
+RBC Count                   4.8          M/µL       4.5 - 5.5 M/µL     NORMAL
+White Blood Cell (WBC)      11.5         x10^3/µL   4.0 - 10.0 x10^3   ELEVATED
+Neutrophils                 78           %          40 - 70 %          ELEVATED
+Lymphocytes                 18           %          20 - 40 %          LOW
+Platelet Count              240          x10^3/µL   150 - 450 x10^3    NORMAL
+ESR (Erythrocyte Sediment)  28           mm/hr      < 15 mm/hr         ELEVATED
+--------------------------------------------------------------------------------
+
+CLINICAL IMPRESSION:
+1. Mild leukocytosis (elevated WBC 11.5) with neutrophilia suggests an active mild acute bacterial infection or inflammatory response.
+2. Hemoglobin, red cell indices, and platelets remain within normal reference limits.
