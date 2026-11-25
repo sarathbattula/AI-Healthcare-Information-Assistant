@@ -20,10 +20,9 @@ def _find_available_port(host: str, preferred_port: int, max_attempts: int = 20)
 
 
 if __name__ == "__main__":
-    host = os.getenv("HOST", "0.0.0.0")
     env_port = os.getenv("PORT")
+    host = os.getenv("HOST", "0.0.0.0" if env_port else "127.0.0.1")
     port = int(env_port) if env_port else _find_available_port(host, 8000)
     reload_enabled = os.getenv("UVICORN_RELOAD", "false").lower() == "true"
-    display_host = "127.0.0.1" if host == "0.0.0.0" else host
-    print(f"Starting AI Healthcare Information Assistant on http://{host}:{port} (Open http://{display_host}:{port}) ...")
+    print(f"Starting AI Healthcare Information Assistant on http://{host}:{port} ...")
     uvicorn.run("app.main:app", host=host, port=port, reload=reload_enabled)

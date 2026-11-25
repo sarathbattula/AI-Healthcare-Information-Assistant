@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
-from pydantic import ConfigDict
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENV_PATH = os.path.join(BASE_DIR, ".env")
@@ -53,7 +52,7 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
     SMTP_FROM_EMAIL: str = os.getenv("SMTP_FROM_EMAIL", "")
 
-    model_config = ConfigDict(env_file=ENV_PATH, extra="ignore")
+    model_config = SettingsConfigDict(env_file=ENV_PATH, extra="ignore")
 
 
 settings = Settings()
