@@ -30,17 +30,16 @@ def get_history(
     current_user: Optional[User] = Depends(get_current_user_optional)
 ):
     query = db.query(HistoryEntry)
-    
+
     if current_user:
         if session_id:
             query = query.filter(or_(HistoryEntry.user_id == current_user.id, HistoryEntry.session_id == session_id))
         else:
             query = query.filter(HistoryEntry.user_id == current_user.id)
+    elif session_id:
+        query = query.filter(HistoryEntry.user_id.is_(None), HistoryEntry.session_id == session_id)
     else:
-        if session_id:
-            query = query.filter(or_(HistoryEntry.session_id == session_id, HistoryEntry.user_id == None))
-        else:
-            query = query.filter(HistoryEntry.user_id == None)
+        return []
 
     if entry_type:
         query = query.filter(HistoryEntry.entry_type == entry_type)
@@ -67,22 +66,30 @@ def get_history(
         })
     return results
 
+
 @router.delete("/{entry_id}")
 def delete_history_item(
     entry_id: int,
+    session_id: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: Optional[User] = Depends(get_current_user_optional)
 ):
     entry = db.query(HistoryEntry).filter(HistoryEntry.id == entry_id).first()
     if not entry:
         raise HTTPException(status_code=404, detail="History entry not found.")
-    
-    if entry.user_id and current_user and entry.user_id != current_user.id and current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Access denied.")
-    
+
+    if entry.user_id is not None:
+        if not current_user or (entry.user_id != current_user.id and current_user.role != "admin"):
+            raise HTTPException(status_code=403, detail="Access denied.")
+    else:
+        if not session_id or entry.session_id != session_id:
+            if not current_user or current_user.role != "admin":
+                raise HTTPException(status_code=403, detail="Access denied.")
+
     db.delete(entry)
     db.commit()
     return {"message": "History entry deleted successfully."}
+
 
 @router.delete("")
 def clear_history(
@@ -94,10 +101,10 @@ def clear_history(
     if current_user:
         query = query.filter(HistoryEntry.user_id == current_user.id)
     elif session_id:
-        query = query.filter(HistoryEntry.session_id == session_id)
+        query = query.filter(HistoryEntry.user_id.is_(None), HistoryEntry.session_id == session_id)
     else:
-        query = query.filter(HistoryEntry.user_id == None)
-        
+        return {"message": "Cleared 0 history records."}
+
     deleted_count = query.delete(synchronize_session=False)
     db.commit()
     return {"message": f"Cleared {deleted_count} history records."}

@@ -28,7 +28,7 @@ PROFESSIONAL_REVIEW_PATTERNS = [
     r"\bstop\s+taking\b", r"\bdiscontinue\b", r"\bincrease\s+dose\b", r"\bdecrease\s+dose\b",
     r"\binterpret\s+my\s+results?\b", r"\bmy\s+(blood\s+test|lab|report)\b",
     r"\bpregnant\b", r"\bpregnancy\b", r"\bpediatric\b", r"\binfant\b", r"\bbaby\b",
-    r"\bworsening\s+symptoms?\b"
+    r"\bworsening\s+symptoms?\b", r"\bsymptoms?\s+(?:are|is)\s+worsening\b"
 ]
 
 EMERGENCY_RESPONSE_TEMPLATE = """🚨 **CRITICAL MEDICAL EMERGENCY NOTICE** 🚨
@@ -84,7 +84,7 @@ def classify_safety_category(query: str) -> Dict[str, Any]:
 
     # 2. Check Professional Review (Category B)
     has_review_pattern = any(re.search(pat, cleaned_q) for pat in PROFESSIONAL_REVIEW_PATTERNS)
-    if has_review_pattern or (has_emergency_keyword and is_definitional):
+    if has_review_pattern:
         return {
             "category": "B_PROFESSIONAL_REVIEW",
             "reason": "Specific dosage, diagnosis, prescription, or clinical management question.",
@@ -93,7 +93,7 @@ def classify_safety_category(query: str) -> Dict[str, Any]:
             "notice": PROFESSIONAL_NOTICE_TEMPLATE
         }
 
-    # 3. Default to Category C (General grounded question)
+    # 3. Default to Category C (General grounded question, including definitional & negated queries)
     return {
         "category": "C_GENERAL",
         "reason": "General health information request.",

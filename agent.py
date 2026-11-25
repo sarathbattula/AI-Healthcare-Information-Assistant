@@ -1,6 +1,5 @@
 import os
 import json
-
 import safety
 import db
 from rag import rag_engine

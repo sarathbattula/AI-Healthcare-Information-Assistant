@@ -67,19 +67,20 @@ async def upload_document(
         raise HTTPException(status_code=400, detail=f"Duplicate document detected: '{existing_doc.filename}' has already been indexed.")
 
     # 3. Safe Storage
-    safe_filename = f"{uuid.uuid4().hex}_{file.filename}"
+    clean_name = os.path.basename(file.filename or "uploaded_file")
+    safe_filename = f"{uuid.uuid4().hex}_{clean_name}"
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
     save_path = os.path.join(settings.UPLOAD_DIR, safe_filename)
     with open(save_path, "wb") as f:
         f.write(file_content)
 
-    doc_title = title if title else os.path.splitext(file.filename)[0]
+    doc_title = title if title else os.path.splitext(clean_name)[0]
     doc_pub = publisher if publisher else ("Verified Medical Registry" if doc_type == "trusted" else (current_user.username if current_user else "Anonymous User"))
 
     # 4. Create Document Record
     new_doc = Document(
         file_hash=file_hash,
-        filename=file.filename,
+        filename=clean_name,
         stored_filename=safe_filename,
         file_type=file_ext.replace(".", ""),
         file_size=len(file_content),
@@ -130,6 +131,8 @@ async def upload_document(
             "chunk_count": len(db_chunks)
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         new_doc.status = "failed"
         db.commit()
@@ -223,7 +226,7 @@ async def verify_and_solve_document(
     import re
     from groq import Groq
 
-    if not file and not raw_text:
+    if not file and (not raw_text or not raw_text.strip()):
         raise HTTPException(status_code=400, detail="Please upload a document file or paste report text.")
 
     file_content = b""
@@ -231,14 +234,14 @@ async def verify_and_solve_document(
     file_ext = ".txt"
 
     if file:
-        filename = file.filename
+        filename = os.path.basename(file.filename or "Uploaded_Report.txt")
         file_content = await file.read()
         try:
             file_ext = validate_file(file_content, filename)
         except ValueError as ve:
             raise HTTPException(status_code=400, detail=str(ve))
     else:
-        file_content = raw_text.encode("utf-8")
+        file_content = raw_text.strip().encode("utf-8")
         file_ext = ".txt"
 
     file_size = len(file_content)
@@ -277,8 +280,13 @@ async def verify_and_solve_document(
     abnormal_matches = re.findall(abnormal_pattern, combined_text, re.IGNORECASE)
     abnormal_count = len(abnormal_matches)
 
-    # Document Indexing (Check if already indexed or index now)
-    existing_doc = db.query(Document).filter(Document.file_hash == file_hash, Document.status != "deleted").first()
+    # Document Indexing (Scoped by current user to avoid cross-user collision)
+    owner_filter = Document.owner_id == current_user.id if current_user else Document.owner_id.is_(None)
+    existing_doc = db.query(Document).filter(
+        Document.file_hash == file_hash,
+        Document.status != "deleted",
+        owner_filter
+    ).first()
     if not existing_doc:
         safe_filename = f"{uuid.uuid4().hex}_{filename}"
         os.makedirs(settings.UPLOAD_DIR, exist_ok=True)

@@ -1,5 +1,6 @@
+import time
 from typing import Optional, List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -19,9 +20,14 @@ VALID_GROQ_MODELS = [
     "allam-2-7b"
 ]
 
+_llm_health_cache = {"checked_at": 0.0, "status": None}
+_LLM_CACHE_TTL_SEC = 300.0
+
+
 class ComponentStatus(BaseModel):
     status: str
     details: str
+
 
 class SystemHealthResponse(BaseModel):
     overall_status: str
@@ -30,8 +36,10 @@ class SystemHealthResponse(BaseModel):
     database: ComponentStatus
     vector_store: ComponentStatus
 
+
 class TestKeyInput(BaseModel):
     api_key: Optional[str] = None
+
 
 class TestKeyResponse(BaseModel):
     success: bool
@@ -39,22 +47,29 @@ class TestKeyResponse(BaseModel):
     model_used: Optional[str] = None
     available_models: Optional[List[str]] = None
 
+
 @router.get("", response_model=SystemHealthResponse)
-def get_system_health(db: Session = Depends(get_db)):
+def get_system_health(
+    probe_llm: bool = Query(False, description="Force a live Groq API ping instead of cached status."),
+    db: Session = Depends(get_db)
+):
     # 1. Check Database
-    db_status = ComponentStatus(status="HEALTHY", details="SQLite connection established.")
+    db_status = ComponentStatus(status="HEALTHY", details="Database connection established.")
     try:
         db.execute(text("SELECT 1"))
     except Exception as e:
-        db_status = ComponentStatus(status="DEGRADED", details=f"Database error: {str(e)}")
+        db_status = ComponentStatus(status="UNHEALTHY", details=f"Database error: {str(e)}")
 
     # 2. Check Embeddings
     embed_status = ComponentStatus(status="HEALTHY", details=f"SentenceTransformer '{settings.EMBEDDING_MODEL_NAME}' loaded.")
     try:
         model = get_embedding_model()
-        vec = model.encode("health check").tolist()
-        if len(vec) == 0:
-            embed_status = ComponentStatus(status="DEGRADED", details="Embedding returned 0 dimensions.")
+        if model is None:
+            embed_status = ComponentStatus(status="DEGRADED", details="Embedding model unavailable; using lexical FTS5 fallback.")
+        else:
+            vec = model.encode("health check").tolist()
+            if len(vec) == 0:
+                embed_status = ComponentStatus(status="DEGRADED", details="Embedding returned 0 dimensions.")
     except Exception as e:
         embed_status = ComponentStatus(status="UNHEALTHY", details=f"Embedding model failure: {str(e)}")
 
@@ -66,47 +81,52 @@ def get_system_health(db: Session = Depends(get_db)):
     except Exception as e:
         vector_status = ComponentStatus(status="DEGRADED", details=f"ChromaDB error: {str(e)}")
 
-    # 4. Check LLM Configuration & Connection
+    # 4. Check LLM Configuration & Connection (cached to protect Groq quota during deployment probes)
     if not settings.GROQ_API_KEY or settings.GROQ_API_KEY.strip() == "":
         llm_status = ComponentStatus(
             status="UNCONFIGURED",
             details=f"GROQ_API_KEY is missing from environment. Active model: '{settings.GROQ_MODEL}'."
         )
     else:
-        # Perform quick ping to verify Groq API connection
-        try:
-            client = Groq(api_key=settings.GROQ_API_KEY)
-            models_to_try = [m for m in VALID_GROQ_MODELS if m]
-            connected_model = None
-            for m in models_to_try:
-                try:
-                    res = client.chat.completions.create(
-                        model=m,
-                        messages=[{"role": "user", "content": "ping"}],
-                        max_tokens=2,
-                        temperature=0.0
+        now = time.time()
+        if not probe_llm and _llm_health_cache["status"] is not None and (now - _llm_health_cache["checked_at"]) < _LLM_CACHE_TTL_SEC:
+            llm_status = _llm_health_cache["status"]
+        else:
+            try:
+                client = Groq(api_key=settings.GROQ_API_KEY.strip())
+                models_to_try = [m for m in VALID_GROQ_MODELS if m]
+                connected_model = None
+                for m in models_to_try:
+                    try:
+                        res = client.chat.completions.create(
+                            model=m,
+                            messages=[{"role": "user", "content": "ping"}],
+                            max_tokens=2,
+                            temperature=0.0
+                        )
+                        if res and res.choices:
+                            connected_model = m
+                            break
+                    except Exception:
+                        continue
+
+                if connected_model:
+                    llm_status = ComponentStatus(
+                        status="CONFIGURED",
+                        details=f"Groq API connected successfully. Active model: '{connected_model}'."
                     )
-                    if res and res.choices:
-                        connected_model = m
-                        break
-                except Exception:
-                    continue
-            
-            if connected_model:
+                else:
+                    llm_status = ComponentStatus(
+                        status="DEGRADED",
+                        details="Groq API key found but failed to respond on candidate models."
+                    )
+                _llm_health_cache["checked_at"] = now
+                _llm_health_cache["status"] = llm_status
+            except Exception as e:
                 llm_status = ComponentStatus(
-                    status="CONFIGURED",
-                    details=f"Groq API connected successfully. Active model: '{connected_model}'."
+                    status="UNHEALTHY",
+                    details=f"Groq client error: {str(e)}"
                 )
-            else:
-                llm_status = ComponentStatus(
-                    status="DEGRADED",
-                    details=f"Groq API key found but failed to respond on candidate models."
-                )
-        except Exception as e:
-            llm_status = ComponentStatus(
-                status="UNHEALTHY",
-                details=f"Groq client error: {str(e)}"
-            )
 
     # Determine overall status
     statuses = [db_status.status, embed_status.status, vector_status.status]

@@ -1,8 +1,31 @@
 import os
 from dotenv import load_dotenv
+from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
-load_dotenv()
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ENV_PATH = os.path.join(BASE_DIR, ".env")
+load_dotenv(ENV_PATH)
+
+
+def _resolve_path(path_value: str, default_rel: str) -> str:
+    raw = (path_value or default_rel).strip()
+    if os.path.isabs(raw):
+        return raw
+    return os.path.normpath(os.path.join(BASE_DIR, raw))
+
+
+def _resolve_database_url(url_value: str) -> str:
+    default_db = os.path.join(BASE_DIR, "healthcare_v2.db").replace("\\", "/")
+    raw = (url_value or f"sqlite:///{default_db}").strip()
+    if raw.startswith("postgres://"):
+        raw = raw.replace("postgres://", "postgresql://", 1)
+    if raw.startswith("sqlite:///./"):
+        rel = raw[len("sqlite:///./"):]
+        abs_path = os.path.join(BASE_DIR, rel).replace("\\", "/")
+        return f"sqlite:///{abs_path}"
+    return raw
+
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "AI Healthcare Information Assistant"
@@ -13,21 +36,24 @@ class Settings(BaseSettings):
 
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
     GROQ_MODEL: str = os.getenv("GROQ_MODEL", "qwen/qwen3.8-27b")
-    
+
     EMBEDDING_MODEL_NAME: str = "all-MiniLM-L6-v2"
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./healthcare_v2.db")
-    CHROMA_DB_DIR: str = os.getenv("CHROMA_DB_DIR", "./chroma_v2_data")
-    UPLOAD_DIR: str = os.getenv("UPLOAD_DIR", "./uploaded_docs")
+    DATABASE_URL: str = _resolve_database_url(os.getenv("DATABASE_URL", ""))
+    CHROMA_DB_DIR: str = _resolve_path(os.getenv("CHROMA_DB_DIR", ""), "chroma_v2_data")
+    UPLOAD_DIR: str = _resolve_path(os.getenv("UPLOAD_DIR", ""), "uploaded_docs")
+    KNOWLEDGE_DIR: str = _resolve_path(os.getenv("KNOWLEDGE_DIR", ""), "knowledge")
+
+    ALLOWED_ORIGINS: str = os.getenv("ALLOWED_ORIGINS", "*")
+    APP_BASE_URL: str = os.getenv("APP_BASE_URL", "")
     SUPPORT_EMAIL: str = os.getenv("SUPPORT_EMAIL", "battulasarath751@gmail.com")
-    
+
     SMTP_SERVER: str = os.getenv("SMTP_SERVER", "smtp.gmail.com")
     SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
     SMTP_USERNAME: str = os.getenv("SMTP_USERNAME", "")
     SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
     SMTP_FROM_EMAIL: str = os.getenv("SMTP_FROM_EMAIL", "")
 
-    class Config:
-        env_file = ".env"
-        extra = "ignore"
+    model_config = ConfigDict(env_file=ENV_PATH, extra="ignore")
+
 
 settings = Settings()

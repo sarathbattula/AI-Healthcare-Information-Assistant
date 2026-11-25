@@ -103,7 +103,7 @@ def list_escalation_tickets(db: Session = Depends(get_db), admin: User = Depends
             "query": t.query,
             "redacted_query": t.redacted_query,
             "status": t.status,
-            "created_at": t.created_at.isoformat()
+            "created_at": t.created_at.isoformat() if t.created_at else ""
         })
     return out
 
@@ -133,5 +133,5 @@ def list_audit_logs(limit: int = 50, db: Session = Depends(get_db), admin: User 
         "resource_type": l.resource_type,
         "resource_id": l.resource_id,
         "details": l.details,
-        "timestamp": l.timestamp.isoformat()
+        "timestamp": l.timestamp.isoformat() if l.timestamp else ""
     } for l in logs]

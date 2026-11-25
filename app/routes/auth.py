@@ -17,7 +17,7 @@ class RegisterInput(BaseModel):
     username: str
     email: str
     password: str
-    role: str = "user"
+
 
 class UserOutput(BaseModel):
     id: int
@@ -25,10 +25,12 @@ class UserOutput(BaseModel):
     email: str
     role: str
 
+
 class TokenOutput(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserOutput
+
 
 @router.post("/register", response_model=UserOutput)
 def register_user(payload: RegisterInput, db: Session = Depends(get_db)):
@@ -42,7 +44,7 @@ def register_user(payload: RegisterInput, db: Session = Depends(get_db)):
         username=payload.username,
         email=payload.email,
         hashed_password=hashed,
-        role=payload.role if payload.role in ["user", "admin", "reviewer"] else "user"
+        role="user"
     )
     db.add(new_user)
     db.commit()

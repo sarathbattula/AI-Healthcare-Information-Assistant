@@ -48,7 +48,14 @@ def test_safety_classification_negation():
 
 def test_safety_classification_definitional():
     res = classify_safety_category("What is a stroke and what causes it?")
-    assert res["category"] != "A_EMERGENCY"
+    assert res["category"] == "C_GENERAL"
+    assert res["is_emergency"] is False
+
+
+def test_safety_classification_worsening_symptoms():
+    res = classify_safety_category("My asthma symptoms are worsening rapidly despite using my inhaler.")
+    assert res["category"] == "B_PROFESSIONAL_REVIEW"
+    assert res["requires_escalation"] is True
 
 def test_safety_classification_professional_review():
     res = classify_safety_category("How many mg of amlodipine should I take daily for my blood pressure?")

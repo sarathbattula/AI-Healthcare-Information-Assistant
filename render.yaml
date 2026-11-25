@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: ai-healthcare-information-assistant
+    runtime: docker
+    plan: starter
+    healthCheckPath: /healthz
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: qwen/qwen3.8-27b
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: DATABASE_URL
+        value: sqlite:///./healthcare_v2.db
+      - key: CHROMA_DB_DIR
+        value: ./chroma_v2_data
+      - key: UPLOAD_DIR
+        value: ./uploaded_docs

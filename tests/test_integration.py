@@ -53,3 +53,35 @@ def test_api_key_test_endpoint():
         assert "message" in data
         assert data["success"] is True
 
+
+def test_liveness_probe_endpoint():
+    with TestClient(app) as client:
+        response = client.get("/healthz")
+        assert response.status_code == 200
+        assert response.json()["status"] == "ok"
+
+
+def test_register_forces_user_role():
+    import uuid
+    uname = f"testuser_{uuid.uuid4().hex[:8]}"
+    with TestClient(app) as client:
+        response = client.post("/api/auth/register", json={
+            "username": uname,
+            "email": f"{uname}@example.com",
+            "password": "StrongPassword123!",
+            "role": "admin"
+        })
+        assert response.status_code == 200
+        assert response.json()["role"] == "user"
+
+
+def test_history_session_isolation():
+    with TestClient(app) as client:
+        response_no_session = client.get("/api/history")
+        assert response_no_session.status_code == 200
+        assert response_no_session.json() == []
+
+        response_unique = client.get("/api/history?session_id=nonexistent_sess_xyz_999")
+        assert response_unique.status_code == 200
+        assert response_unique.json() == []
+

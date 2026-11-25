@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_, text
 
 from app.config import settings
+from app.database import IS_SQLITE
 from app.models import Document, DocumentChunk, TrustedSource
 
 # Initialize sentence transformer model separately from LLM
@@ -58,15 +59,16 @@ def index_document_chunks(db: Session, doc: Document, chunks: List[Dict[str, Any
         db.flush()  # assign db_chunk.id
 
         # SQLite FTS5 insertion via SQLAlchemy DB session
-        db.execute(
-            text("INSERT INTO chunk_fts(chunk_id, doc_id, page_number, content) VALUES (:chunk_id, :doc_id, :page_number, :content)"),
-            {
-                "chunk_id": db_chunk.id,
-                "doc_id": doc.id,
-                "page_number": chunk_data['page_number'],
-                "content": chunk_data['content']
-            }
-        )
+        if IS_SQLITE:
+            db.execute(
+                text("INSERT INTO chunk_fts(chunk_id, doc_id, page_number, content) VALUES (:chunk_id, :doc_id, :page_number, :content)"),
+                {
+                    "chunk_id": db_chunk.id,
+                    "doc_id": doc.id,
+                    "page_number": chunk_data['page_number'],
+                    "content": chunk_data['content']
+                }
+            )
 
         # Prepare ChromaDB payload
         if model:
@@ -115,9 +117,68 @@ def delete_document_chunks(db: Session, doc_id: int):
         pass
 
     # Delete from FTS5 via SQLAlchemy session
-    db.execute(text("DELETE FROM chunk_fts WHERE doc_id = :doc_id"), {"doc_id": doc_id})
+    if IS_SQLITE:
+        db.execute(text("DELETE FROM chunk_fts WHERE doc_id = :doc_id"), {"doc_id": doc_id})
     db.query(DocumentChunk).filter(DocumentChunk.doc_id == doc_id).delete()
     db.commit()
+
+
+def ensure_vector_store_synced(db: Session):
+    """Re-index SQL chunks into ChromaDB if vector storage was reset (e.g., ephemeral deploy)."""
+    try:
+        if _collection.count() > 0:
+            return
+    except Exception:
+        return
+
+    chunks = (
+        db.query(DocumentChunk, Document)
+        .join(Document, DocumentChunk.doc_id == Document.id)
+        .filter(Document.status == "indexed")
+        .all()
+    )
+    if not chunks:
+        return
+
+    model = get_embedding_model()
+    if not model:
+        return
+
+    chroma_ids = []
+    chroma_embeddings = []
+    chroma_metadatas = []
+    chroma_documents = []
+
+    for c_obj, doc in chunks:
+        try:
+            vec = model.encode(c_obj.content).tolist()
+            chroma_ids.append(c_obj.embedding_id or f"doc_{doc.id}_chunk_{c_obj.chunk_index}")
+            chroma_embeddings.append(vec)
+            chroma_documents.append(c_obj.content)
+            chroma_metadatas.append({
+                "chunk_db_id": c_obj.id,
+                "doc_id": doc.id,
+                "page_number": c_obj.page_number,
+                "doc_type": doc.doc_type,
+                "owner_id": doc.owner_id or 0,
+                "title": doc.title,
+                "publisher": doc.publisher,
+                "url": doc.url or "",
+                "publication_date": doc.publication_date or ""
+            })
+        except Exception:
+            continue
+
+    if chroma_ids:
+        try:
+            _collection.add(
+                ids=chroma_ids,
+                embeddings=chroma_embeddings,
+                metadatas=chroma_metadatas,
+                documents=chroma_documents
+            )
+        except Exception as e:
+            print(f"[RAG Engine] Sync error: {e}")
 
 
 def hybrid_search(
@@ -146,17 +207,20 @@ def hybrid_search(
 
     doc_map = {d.id: d for d in allowed_docs}
 
-    # 2. Vector Search via Chroma
+    # 2. Vector Search via Chroma (scoped by allowed_doc_ids)
     vector_ranks: Dict[int, int] = {} # chunk_id -> rank (1-indexed)
     vector_meta: Dict[int, Dict[str, Any]] = {}
     
     try:
         model = get_embedding_model()
-        if model:
+        collection_count = _collection.count()
+        if model and collection_count > 0:
             query_vec = model.encode(query).tolist()
+            n_results = min(top_k * 3, collection_count)
             vector_results = _collection.query(
                 query_embeddings=[query_vec],
-                n_results=top_k * 3
+                n_results=n_results,
+                where={"doc_id": {"$in": list(allowed_doc_ids)}}
             )
             if vector_results and vector_results.get("metadatas"):
                 metas = vector_results["metadatas"][0]
@@ -174,11 +238,12 @@ def hybrid_search(
     except Exception as e:
         print(f"[RAG Engine] Vector search error: {e}")
 
-    # 3. Keyword Search via SQLite FTS5 through SQLAlchemy
-    sanitized_q = ' OR '.join([f'"{w.strip()}"' for w in query.replace('"', '').split() if len(w.strip()) > 2])
+    # 3. Keyword Search via SQLite FTS5 (or SQL ILIKE fallback for non-SQLite DBs)
     fts_ranks: Dict[int, int] = {}
-    
-    if sanitized_q:
+    words = [w.strip() for w in query.replace('"', '').split() if len(w.strip()) > 2]
+
+    if words and IS_SQLITE:
+        sanitized_q = ' OR '.join([f'"{w}"' for w in words])
         try:
             placeholders = ','.join([f":id_{i}" for i in range(len(allowed_doc_ids))])
             params = {f"id_{i}": doc_id for i, doc_id in enumerate(allowed_doc_ids)}
@@ -196,6 +261,19 @@ def hybrid_search(
                 c_id = row[0]
                 if c_id not in fts_ranks:
                     fts_ranks[c_id] = rank
+        except Exception:
+            pass
+    elif words:
+        try:
+            like_filters = [DocumentChunk.content.ilike(f"%{w}%") for w in words[:5]]
+            rows = (
+                db.query(DocumentChunk.id)
+                .filter(DocumentChunk.doc_id.in_(allowed_doc_ids), or_(*like_filters))
+                .limit(top_k * 3)
+                .all()
+            )
+            for rank, row in enumerate(rows, start=1):
+                fts_ranks[row[0]] = rank
         except Exception:
             pass
 

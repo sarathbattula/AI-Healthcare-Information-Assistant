@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,9 +26,17 @@
             --accent-amber: #f59e0b;
             --accent-rose: #f43f5e;
             --text-heading: #f8fafc;
-            --text-body: #cbd5e1;
-            --text-muted: #64748b;
+            --text-body: #e2e8f0;
+            --text-muted: #cbd5e1;
             --card-radius: 16px;
+        }
+
+        .text-muted {
+            color: #cbd5e1 !important;
+        }
+
+        .text-body-secondary {
+            color: #e2e8f0 !important;
         }
 
         * {
@@ -965,18 +973,11 @@
         </div>
     </main>
 
-        </div>
-    </main>
-
     <!-- FOOTER -->
     <footer class="py-3 mt-auto border-top border-secondary border-opacity-25 bg-dark bg-opacity-75 small text-center text-muted">
-        <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div class="container d-flex flex-wrap justify-content-center align-items-center gap-2">
             <div>
                 <strong>MediCare AI</strong> &copy; 2026. Empowering informed healthcare decisions.
-            </div>
-            <div>
-                <span class="badge bg-secondary-subtle text-secondary me-2">Offline Safe + Groq LLM</span>
-                <span>Educational medical information. Always consult a licensed doctor.</span>
             </div>
         </div>
     </footer>
@@ -1351,12 +1352,12 @@ IMPRESSION:
                     })
                 });
 
-                const data = await res.json();
+                const data = await safeParseJson(res);
                 const loader = document.getElementById(loadingId);
                 if(loader) loader.remove();
 
                 if (!res.ok) {
-                    const errorMsg = data.detail || data.message || `Server error (${res.status})`;
+                    const errorMsg = (data && (data.detail || data.message)) || `Server error (${res.status})`;
                     box.innerHTML += `<div class="msg-assistant-bubble text-danger"><i class="bi bi-exclamation-octagon me-1"></i> ${escapeHtml(errorMsg)}</div>`;
                     box.scrollTop = box.scrollHeight;
                     return;
@@ -1529,16 +1530,18 @@ IMPRESSION:
                     body: formData
                 });
 
-                const data = await res.json();
+                const data = await safeParseJson(res);
                 loadIndicator.classList.add("d-none");
                 verifyBtn.disabled = false;
 
-                if(!res.ok) {
-                    alert(`Verification failed: ${data.detail || 'Error processing report'}`);
+                if(!res.ok || !data) {
+                    alert(`Verification failed: ${(data && data.detail) || `Server error (${res.status})`}`);
                     return;
                 }
 
                 // Render Summary from ReportSummarizerAgent
+                const placeholderEl = document.getElementById("docPlaceholderState");
+                if(placeholderEl) placeholderEl.classList.add("d-none");
                 solutionCard.classList.remove("d-none");
                 document.getElementById("docTitleDisplay").textContent = data.filename;
                 document.getElementById("docHashDisplay").textContent = data.file_hash.substring(0, 16) + "...";
@@ -1596,12 +1599,12 @@ IMPRESSION:
                     })
                 });
 
-                const data = await res.json();
+                const data = await safeParseJson(res);
                 loadingState.classList.add("d-none");
                 solutionBtn.disabled = false;
 
-                if(!res.ok) {
-                    alert(`Solution generation failed: ${data.detail || 'Error generating solution'}`);
+                if(!res.ok || !data) {
+                    alert(`Solution generation failed: ${(data && data.detail) || `Server error (${res.status})`}`);
                     return;
                 }
 
@@ -1640,11 +1643,44 @@ IMPRESSION:
             document.getElementById("attachedReportAlert").classList.add("d-none");
         }
 
+        function copyTextSafe(text, successMsg) {
+            if(!text) return;
+            if(navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert(successMsg);
+                }).catch(() => {
+                    fallbackCopyText(text, successMsg);
+                });
+            } else {
+                fallbackCopyText(text, successMsg);
+            }
+        }
+
+        function fallbackCopyText(text, successMsg) {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand("copy");
+                alert(successMsg);
+            } catch(e) {
+                alert("Unable to copy automatically. Please select and copy the text manually.");
+            } finally {
+                document.body.removeChild(ta);
+            }
+        }
+
         function copyDocumentSolution() {
             const text = document.getElementById("docSolutionContent").innerText || document.getElementById("docSummaryContent").innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                alert("Document text copied to clipboard!");
-            });
+            copyTextSafe(text, "Document text copied to clipboard!");
+        }
+
+        function copyHistoryModalSolution() {
+            const el = document.getElementById("historyDetailSolution");
+            if(el) copyTextSafe(el.innerText, "Advice copied to clipboard!");
         }
 
         // ================= CONTACT FORM =================
@@ -1667,14 +1703,19 @@ IMPRESSION:
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify(payload)
                 });
-                const data = await res.json();
+                const data = await safeParseJson(res);
                 btn.disabled = false;
+
+                if(!res.ok || !data) {
+                    alert(`Submission failed: ${(data && data.detail) || `Server error (${res.status})`}`);
+                    return;
+                }
 
                 const msg = document.getElementById("contactSuccessMsg");
                 document.getElementById("contactSuccessText").innerHTML = `
                     <strong>Inquiry Processed Successfully!</strong><br>
-                    <i class="bi bi-envelope-check me-1"></i> Email dispatched to <strong>${data.email_dispatched_to || 'battulasarath751@gmail.com'}</strong>.<br>
-                    <small>Ticket Reference ID: <strong>${data.ticket_id}</strong></small>
+                    <i class="bi bi-envelope-check me-1"></i> ${escapeHtml(data.message || '')}<br>
+                    <small>Ticket Reference ID: <strong>${escapeHtml(data.ticket_id)}</strong> (${escapeHtml(data.email_status || 'RECEIVED')})</small>
                 `;
                 msg.classList.remove("d-none");
                 document.getElementById("contactForm").reset();
@@ -1689,14 +1730,15 @@ IMPRESSION:
             const customKey = localStorage.getItem("medicare_groq_api_key");
             const statusLabel = document.getElementById("apiKeyStatusLabel");
             const modelIndicator = document.getElementById("activeModelIndicator");
+            const keyInput = document.getElementById("customApiKeyInput");
 
             if(customKey) {
-                statusLabel.innerHTML = `<span class="badge bg-success">Custom Key</span>`;
-                modelIndicator.textContent = "AI Model: Groq (Custom Key)";
-                document.getElementById("customApiKeyInput").value = customKey;
+                if(statusLabel) statusLabel.innerHTML = `<span class="badge bg-success">Custom Key</span>`;
+                if(modelIndicator) modelIndicator.textContent = "AI Model: Groq (Custom Key)";
+                if(keyInput) keyInput.value = customKey;
             } else {
-                statusLabel.innerHTML = `API Key: Active`;
-                modelIndicator.textContent = "AI Model: Groq (System Key)";
+                if(statusLabel) statusLabel.innerHTML = `API Key: Active`;
+                if(modelIndicator) modelIndicator.textContent = "AI Model: Groq (System Key)";
             }
         }
 
@@ -1890,6 +1932,15 @@ IMPRESSION:
         }
 
         // ================= HELPERS =================
+        async function safeParseJson(res) {
+            try {
+                const text = await res.text();
+                return text ? JSON.parse(text) : null;
+            } catch(e) {
+                return null;
+            }
+        }
+
         function escapeHtml(str) {
             if(!str) return "";
             return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

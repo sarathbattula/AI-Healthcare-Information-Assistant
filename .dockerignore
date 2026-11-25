@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.git/
+.env
+*.db
+*.sqlite3
+chroma_v2_data/
+uploaded_docs/
+node_modules/
+dist/
+build/

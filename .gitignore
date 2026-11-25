@@ -11,12 +11,19 @@ __pycache__/
 
 # Database and Vector Store Persistence
 *.db
+*.db-shm
+*.db-wal
 *.sqlite3
 healthcare_assistant.db
 healthcare_v2.db
 chroma_db/
 chroma_v2_data/
 uploaded_docs/
+
+# Python Virtual Environments
+venv/
+.venv/
+env/
 
 # Node / React Frontend Build
 node_modules/
