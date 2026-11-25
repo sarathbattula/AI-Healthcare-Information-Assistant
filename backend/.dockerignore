@@ -5,6 +5,8 @@ __pycache__/
 .git/
 .env
 *.db
+*.db-shm
+*.db-wal
 *.sqlite3
 chroma_v2_data/
 uploaded_docs/

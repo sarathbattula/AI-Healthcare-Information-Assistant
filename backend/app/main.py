@@ -2,7 +2,7 @@ import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from app.config import settings, BASE_DIR
@@ -161,10 +161,10 @@ app.include_router(health.router)
 app.include_router(history.router)
 app.include_router(contact.router)
 
-# Mount Static UI if present
-templates_dir = os.path.join(BASE_DIR, "templates")
-if os.path.exists(templates_dir):
-    app.mount("/static", StaticFiles(directory=templates_dir), name="static")
+# Mount Frontend UI if present (supports combined or separated deployment)
+frontend_dir = settings.FRONTEND_DIR
+if os.path.exists(frontend_dir):
+    app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
 
 
 @app.get("/healthz")
@@ -173,9 +173,17 @@ def liveness_probe():
     return {"status": "ok", "version": settings.VERSION}
 
 
+@app.get("/config.js")
+def frontend_runtime_config():
+    config_path = os.path.join(frontend_dir, "config.js")
+    if os.path.exists(config_path):
+        return FileResponse(config_path, media_type="application/javascript")
+    return Response(content="window.MEDICARE_CONFIG = { API_BASE_URL: '' };", media_type="application/javascript")
+
+
 @app.get("/")
 def read_root():
-    index_path = os.path.join(BASE_DIR, "templates", "index.html")
+    index_path = os.path.join(frontend_dir, "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)
     return {

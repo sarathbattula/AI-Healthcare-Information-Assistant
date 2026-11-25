@@ -2,8 +2,12 @@ import os
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ENV_PATH = os.path.join(BASE_DIR, ".env")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # backend/
+ROOT_DIR = os.path.dirname(BASE_DIR)  # project root
+
+_backend_env = os.path.join(BASE_DIR, ".env")
+_root_env = os.path.join(ROOT_DIR, ".env")
+ENV_PATH = _backend_env if os.path.exists(_backend_env) else _root_env
 load_dotenv(ENV_PATH)
 
 
@@ -41,6 +45,7 @@ class Settings(BaseSettings):
     CHROMA_DB_DIR: str = _resolve_path(os.getenv("CHROMA_DB_DIR", ""), "chroma_v2_data")
     UPLOAD_DIR: str = _resolve_path(os.getenv("UPLOAD_DIR", ""), "uploaded_docs")
     KNOWLEDGE_DIR: str = _resolve_path(os.getenv("KNOWLEDGE_DIR", ""), "knowledge")
+    FRONTEND_DIR: str = _resolve_path(os.getenv("FRONTEND_DIR", ""), os.path.join(ROOT_DIR, "frontend"))
 
     ALLOWED_ORIGINS: str = os.getenv("ALLOWED_ORIGINS", "*")
     APP_BASE_URL: str = os.getenv("APP_BASE_URL", "")

@@ -25,6 +25,9 @@ venv/
 .venv/
 env/
 
+# Local IDE Settings
+.vscode/
+
 # Node / React Frontend Build
 node_modules/
 dist/

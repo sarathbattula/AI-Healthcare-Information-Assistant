@@ -1,0 +1,16 @@
+{
+  "include": [
+    "backend"
+  ],
+  "exclude": [
+    "**/__pycache__",
+    "venv",
+    ".git",
+    "backend/chroma_v2_data",
+    "backend/uploaded_docs"
+  ],
+  "extraPaths": [
+    "backend"
+  ],
+  "reportMissingImports": "warning"
+}

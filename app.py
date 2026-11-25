@@ -1,28 +1,11 @@
-"""
-AI Healthcare Information Assistant - Main Server Entry Point
-Runs the FastAPI application server using Uvicorn.
-"""
+"""Root launcher delegating to backend/app.py so `python app.py` works from project root."""
 import os
-import socket
-import uvicorn
-from app.main import app
+import runpy
+import sys
 
-
-def _find_available_port(host: str, preferred_port: int, max_attempts: int = 20) -> int:
-    """Return preferred_port if free, or find next free local port when PORT is not pinned."""
-    bind_host = "127.0.0.1" if host == "0.0.0.0" else host
-    for offset in range(max_attempts):
-        candidate = preferred_port + offset
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            if s.connect_ex((bind_host, candidate)) != 0:
-                return candidate
-    return preferred_port
-
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "backend")
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
 
 if __name__ == "__main__":
-    env_port = os.getenv("PORT")
-    host = os.getenv("HOST", "0.0.0.0" if env_port else "127.0.0.1")
-    port = int(env_port) if env_port else _find_available_port(host, 8000)
-    reload_enabled = os.getenv("UVICORN_RELOAD", "false").lower() == "true"
-    print(f"Starting AI Healthcare Information Assistant on http://{host}:{port} ...")
-    uvicorn.run("app.main:app", host=host, port=port, reload=reload_enabled)
+    runpy.run_path(os.path.join(BACKEND_DIR, "app.py"), run_name="__main__")

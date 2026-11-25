@@ -10,16 +10,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY backend/requirements.txt /app/backend/requirements.txt
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r /app/backend/requirements.txt
 
 # Pre-cache embedding model to avoid cold-start timeout after deployment
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
 
-COPY . .
+COPY backend/ /app/backend/
+COPY frontend/ /app/frontend/
 
-RUN mkdir -p /app/chroma_v2_data /app/uploaded_docs
+WORKDIR /app/backend
+RUN mkdir -p /app/backend/chroma_v2_data /app/backend/uploaded_docs
 
 EXPOSE 8000
 
